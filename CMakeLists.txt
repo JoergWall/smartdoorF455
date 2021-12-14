@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.10.2)
+project(smartdoorF455)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+add_subdirectory(c)
+add_subdirectory(cpp)
