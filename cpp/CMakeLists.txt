@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.10.2)
+set(EXE_NAME smartdoorF455)
+add_executable(${EXE_NAME} main.cpp)
+target_include_directories(${EXE_NAME} PRIVATE ~/RealSenseID/include/ ~/RealSenseID/include/RealSenseID ~/rpi-rgb-led-matrix/include/ )
+target_link_directories(${EXE_NAME} PRIVATE ~/RealSenseID/build/lib/ ~/rpi-rgb-led-matrix/lib)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread") 
+target_link_libraries(${EXE_NAME} PRIVATE rsid pigpio rgbmatrix mosquitto) 
