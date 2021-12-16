@@ -36,5 +36,9 @@ then
 fi
 # run $prog with nohup to decouple from shell
 nohup $progdir/$prog </dev/null > $logdir/$logfile 2>&1 &
-echo "$prog started successfully"
+PROG_PID=$(pgrep -x $prog)
+echo "$prog started successfully with PID $PROG_PID"
 echo "watch $logdir/$logfile for errors"
+# obtain process id to set CPU affinity to CPU #3
+# assuming that isolcpus=3 as been added to /boot/cmdline.txt
+taskset -cp 3 $PROG_PID
