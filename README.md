@@ -76,26 +76,31 @@ Here's how to build the code, assuming a clean installed Raspberry Pi OS:
 ```
 # installation of smartdoorF455
 # bring Raspi up2date and get additional software developement tools
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install cmake build-essential -y
-sudo apt-get install mosquitto mosquitto-dev libmosquittopp-dev -y
-sudo apt-get install libgraphicsmagick++-dev libwebp-dev -y 
-# make sure pigpio is installed, see
-# https://abyz.me.uk/rpi/pigpio/download.html
-sudo apt-get install pigpio -y
-# install RealSense ID SDK by Intel
+sudo apt update -y
+sudo apt upgrade -y
+# install essential development tooling
+sudo apt install cmake build-essential -y
+# mosquitto is the MQTT broker
+sudo apt install mosquitto mosquitto-dev libmosquittopp-dev mosquitto-clients -y
+# libgraphicsmagick++-dev is required to build rpi-rgb-led-matrix utilities
+sudo apt install libgraphicsmagick++-dev libwebp-dev -y
+# you may want to encrypt network communication
+sudo apt install libssl-dev libcurl4-openssl-dev -y
+# let's build the RealSense ID SDK by Intel
+cd ~
 git clone https://github.com/IntelRealSense/RealSenseID.git
 cd RealSenseID
 mkdir build
 cd build
-cmake .. -DRSID_PREVIEW=1
+cmake .. 
 make -j4
-# install rpi-rgb-led-matrix by Henner Zeller
+# let's build the rpi-rgb-led-matrix library by Henner Zeller
+cd ~
 git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
 cd rpi-rgb-led-matrix/
 make -C examples-api-use
-# smartdoorF455
+# let's build the smartdoorF455 application
+cd ~
 git clone https://github.com/joergwall/smartdoorF455.git
 cd smartdoorF455
 mkdir build
