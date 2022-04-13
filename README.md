@@ -1,3 +1,5 @@
+<p align="right">
+  <a href="./README_DE.md" rel="noopener">GERMAN VERSION</a>
 <p align="center">
   <a href="" rel="noopener">
  <img width=251px height=513px src="images/small/01_mounted_smartdoorF455_side-view.JPG" alt="smart door opener with facial authentication"></a>
