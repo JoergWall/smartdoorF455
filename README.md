@@ -14,7 +14,7 @@
 
 ---
 
-<p align="center"> With the introduction of the iPhone X in September 2017, Apple introduced authentication with biometric facial features as a reliable technology in our everyday lives. With this project, we want to bring this process as a door opener from the smartphone to the smart home. 
+<p align="center">With the introduction of the iPhone X in September 2017, Apple introduced authentication with biometric facial features as a reliable technology in our everyday lives. With this project, we want to bring this process as a door opener from the smartphone to the smart home. 
     <br> 
 </p>
 
@@ -115,8 +115,7 @@ The Raspi is powered via the jack plug or the screw terminals on the Adafruit Bo
 *discreet wiring, LED matrix with 55mm spacer bolts wrap around Raspi and power supply*
 
 ![](images/05_internals_LED-Matrix_unmounted-side-view.JPG)
-*discrete Wiring with Jumperkabel*
-
+‚
 *discrete wiring with jumper cable*
 
 The discrete wiring using jumper or ribbon cables is a little more fiddly but just as functional. The presence sensor (PIR or photoelectric sensor) is used in the case of discrete wiring to connect to [GPIO Pin 5](https://www.heise.de/tipps-tricks/Raspberry-Pi-Das-koennen-die-GPIO-Pins-4583823.html). The Meanwell power supply has a 4-pin screw terminal at the low-voltage output, which supplies power to both the RGB matrix via the power cable included in the scope of delivery and the Raspi via GPIO pin 2 for 5V and GPIO pin 39 for GND. We do not recommend using the jumper cables for powering the Raspi, but rather using a thicker cable with higher cross-section and snappier terminals. To do this, we rededicated 2 redundant cable clamps from the LED Matrix power supply, pulled them out with a small screwdriver and covered them with shrink tubing so that there is no risk of short circuits on GPIO pin 2.
@@ -130,7 +129,7 @@ The instructions for the discrete wiring of the LED matrix module are shown in d
 
 ![](images/07_mounted_smartdoorF455_bottom-camera.JPG)
 
-*Kamera kopfüber an der Unterseite des Gehäuses*
+*camera face down mounted on the bottom of the casing*
 
 The camera is attached upside down on the underside of the housing. A USB-C cable, which is included with the camera, is fed into the housing through a hole to be drilled behind the camera and plugged into one of the 4 USB-A ports on the Raspberry Pi.
 
