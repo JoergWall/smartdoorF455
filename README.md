@@ -339,6 +339,9 @@ This step takes effect after restarting the computer and is intended to prevent 
 Although Intel announced the RealSense ID product line as a solution for facial biometric authentication in January 2021, it was already discontinued with effect from February 28, 2022. We are currently not aware of an alternative that combines the three-dimensional scan with artificial intelligence for face recognition. So if you want to get hold of such a camera, you need to hurry to get some remaining stock of the camera from the dealers. This Intel website points out this fact:
 [https://www.intelrealsense.com/facial-authentication/](https://www.intelrealsense.com/facial-authentication/)
 
+<b>Update April 4, 2024:</b> Intel announced the [removal of the end-of-life announcement](https://cdrdv2-public.intel.com/807360/PCN807360-01.pdf), making the Intel® RealSense™ ID Solution F455 available to customers again :-)
+
+
 ## Troubleshooting <a name = "Troubleshooting"></a>
 When replicating this smart home door opener consisting of a transformer, LED matrix, Raspi and, if necessary, matrix bonnet, small problems can occur here and there, of which we would like to address the known ones here. First to hardware topics:
 - power supply
