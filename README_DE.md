@@ -352,7 +352,7 @@ Dieser Schritt wird nach dem Neustart des Rechners wirksam und soll ein etwaiges
 Obwohl Intel die RealSense ID Produktlinie als Lösung für die biometrische Authentifizierung per Gesicht erst im Januar 2021 ankündigte, wurde diese bereits im September 2021 mit Wirkung zum 28. Februar 2022 abgekündigt. Eine Alternative, welche den dreidimensionalen Scan mit einer künstlichen Intelligenz für die Gesichtserkennung kombiniert, ist uns aktuell nicht bekannt. Wer eine solche Kamera ergattern will, muss sich also beeilen um noch einen Restposten bei den Händlern zu finden. Diese Intel Webseite weist auf diesen Umstand hin:
 [https://www.intelrealsense.com/facial-authentication/](https://www.intelrealsense.com/facial-authentication/)
 
-<b>Update April 4, 2024:</b> Intel zog die [end-of-life Ankündigung](https://cdrdv2-public.intel.com/807360/PCN807360-01.pdf) zurück und macht damit das Produkt Intel® RealSense™ ID Solution F455 für Kunden verfügbar :smiley:
+<b>Update April 4, 2024:</b> Intel macht die [end-of-life Ankündigung rückgängig](https://cdrdv2-public.intel.com/807360/PCN807360-01.pdf) und verlängert damit den Produktlebenszyklus von Intel® RealSense™ ID Solution F455 auf unbestimmte Zeit :smiley:
 
 ## Troubleshooting <a name = "Troubleshooting"></a>
 Beim Nachbau dieses Smarthome Türöffners bestehend aus Trafo, LED Matrix, Raspi und ggf. Matrix Bonnet können hie und da schon mal Problemchen auftreten, von denen wir hier die uns bekannten adressieren möchten. Zunächst zu Hardware Themen:
