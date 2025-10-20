@@ -1,0 +1,13 @@
+bin/smart*
+build/
+snapshots/
+cmake-build-*/
+*.log
+*.tmp
+*.bak
+*.old
+*.org
+.DS_Store
+.vscode/
+.idea/
+external/

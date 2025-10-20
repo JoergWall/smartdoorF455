@@ -33,7 +33,7 @@
 - [Software Installation](#install)
 - [Usage](#usage)
 - [Teach faces for authentication](#teach_faces)
-- [Sourcecode Adaption](#sourcecode_adaption)
+- [System Configuration](#system_configuration)
 - [Open Sesame](#open_sesame)
 - [Camera Security](#camera_security)
 - [End of Life of Intel ReaSenseID F455](#end_of_life)
@@ -170,41 +170,25 @@ sudo apt-get upgrade
 sudo apt-get install cmake build-essential -y
 sudo apt-get install mosquitto mosquitto-dev libmosquittopp-dev -y
 sudo apt-get install libgraphicsmagick++-dev libwebp-dev -y 
-# make sure pigpio is installed, see
-# https://abyz.me.uk/rpi/pigpio/download.html
-sudo apt-get install pigpio -y
-# install RealSense ID SDK by Intel
-git clone https://github.com/IntelRealSense/RealSenseID.git
-cd RealSenseID
-mkdir build
-cd build
-cmake .. -DRSID_PREVIEW=1
-make -j4
-# install rpi-rgb-led-matrix by Henner Zeller
-git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
-cd rpi-rgb-led-matrix/
-make -C examples-api-use
+
 # smartdoorF455
 git clone https://github.com/joergwall/smartdoorF455.git
 cd smartdoorF455
 mkdir build
 cd build
-cmake ..
+cmake -Wno-dev ..
 make -j4
+sudo make install
 ```
 
 
 ## 🎈 Usage <a name="usage"></a>
 
-The compiled C++ binary executable "smartdoorF455" or C pendant "smartdoorF455_c" should now exist in the ~/smartdoorF455/bin directory. The source codes can be found in ~/smartdoorF455/cpp or ~/smartdoorF455/c. The program is started via shell script with sudo:
+The compiled C++ binary executable "smartdoorF455" should now exist in the ~/smartdoorF455/bin directory. The source codes can be found in ~/smartdoorF455/cpp or ~/smartdoorF455/c. The program is started via shell script with sudo:
 
 ```
 cd ~/smartdoorF455/bin
 sudo ./run_smartdoorF455.sh 
-```
-or who prefers the variant in programming language C:
-```
-sudo ./run_smartdoorF455_c.sh 
 ```
 
 and provides the following output depending on the user name and time/date:
@@ -223,6 +207,13 @@ sudo killall smartdoorF455
 In order to bring the face of authorized users into the camera, we use a tool with a command line interface. If the device /dev/ttyACM0 is missing, use /dev/ttyACM1 instead. The parameters currently stored in the camera and a selection menu now appear. The rotation parameter can be set to 0 in the "s" menu or upside down to 180 depending on whether the camera is positioned upside down - i.e. depending on whether the camera is screwed upside down on the housing or upright, e.g. on the included mini tripod. The menu item "e" offers training with local profile storage on the camera. The face should be about 30 to 50 cm away from the camera. The procedure then looks like this:
 ```
 # enroll user for authentication
+# install RealSense ID SDK by Intel
+git clone https://github.com/IntelRealSense/RealSenseID.git
+cd RealSenseID
+mkdir build
+cd build
+cmake .. -DRSID_PREVIEW=1
+make -j4
 cd ~/RealsenseID/build/bin
 sudo ./rsid-cli /dev/ttyACM0
 Connected to device
@@ -265,14 +256,68 @@ This way the facial profiles of all authorized persons are learned. When assigni
 #define FONT_NAME FONT_PATH "4x6.bdf"
 ```
 
-## Sourcecode Adaption <a name = "sourcecode_adaption"></a>
-The source code under ~/smartdoorF455/cpp or ~/smartdoorF455/c must be adapted to the circumstances. Is MQTT used or is an Adafruit Bonnet used for wiring the LED RGB matrix module? This is to be adjusted in the source code using appropriate #define constant definitions. If, for example, the Adafruit Bonnet is used, GPIO 19 is used instead of GPIO 5 for the infrared reflex light barrier, since the RGB matrix is controlled via other GPIO pins:
+## System configuration  <a name = "system_configuration"></a>
+To adapt the system according to your configuration, please edit the file src/config.toml.
+
 ```
-/* START SYSTEM CONFIGURATION SECTION */
-#define MOSQUITTO_IN_USE /* comment this line, if MQTT is not used to open door */
-#define ADAFRUIT_BONNET_IN_USE /* comment this line, if you have direct cable wiring from Raspi to LED Matrix */
-#define STDOUT_ADDTL_INFO  /* provides additional information on stdout e.g. prints date/time when movement sensor triggers camera */
-/* END   SYSTEM CONFIGURATION SECTION */
+# This is a TOML config file for smartdoorF455
+title = "TOML configuration file for smartdoorF455"
+
+[raspi]
+gpio_sensor_pin = 19 # use 19 as sensor input pin, if Adafruit Bonnet is used else use pin 5
+gpio_sensor_pull = 2 # int value: 0=PUD_OFF, 1=PUD_DOWN, 2=PUD_UP,
+                     # depending on the presence sensor used, the gpio_sensor_pin 
+                     # needs to be pulled up (5V) or down (GND). Values are documented in WiringPI
+                     # library, see https://github.com/WiringPi/WiringPi
+wait_time_until_reauthentication = 5 # wait time until next reauthentication becomes possible again in seconds
+
+[mosquitto] # MQTT used for door intercommunication  
+use_mosquitto = true
+host = "localhost"
+port = 1884
+keepalive = 600
+client_id = "smartdoorF455" # unique client_id
+topic_door = "siedle/exec" # topic to manage door intercommunication
+topic_control = "smartdoorF455" # topic to manage interactions like e.g. user enrollment
+
+[camera] # see https://github.com/IntelRealSense/RealSenseID/blob/master/include/RealSenseID/DeviceConfig.h for camera config data
+         # as this may be altered for future camera software versions
+camera_rotation = "0" #  string values: 0 (default), 90, 180, 270
+security_level = "Low" # string values: High, Medium, Low (default) 
+                       # increasing to Medium or High causes too many
+                       # false spoof reports 
+                       # (my experience, Version 1.3.1 / May 2025)
+algo_flow = "All" # string values: All, FaceDetectionOnly (default), SpoofOnly, RecognitionOnly
+dump_mode = "CroppedFace" # string values: None (default), CroppedFace, FullFrame
+matcher_confidence_level = "High" # string values: High, Medium, Low (default)
+frontal_face_policy = "Moderate" # string values: Strict, Moderate, None (default)
+max_spoofs = 0 # integer value: Specifies the maximum number of consecutive spoofing attempts allowed before the device rejects further authentication requests.
+gpio_auth_toggling = 0 # integer value: Controls whether GPIO toggling is enabled(1) or disabled(0, default) after successful authentication.
+
+[matrix_options] # options for LED matrix display
+hardware_mapping = "adafruit-hat" # string value: adafruit-hat or "" empty string. Specifies, how LED matrix display is connected to Raspberry gpio_sensor_pin
+brightness = 80 # integer value for brightness in percent from 0..100
+pixel_mapper_config = "Rotate:270" # string values: "Rotate:0", "Rotate:90", "Rotate:180", "Rotate:270"
+clock_color = [255, 255, 0] # array of int with values from 0..255
+date_color = [255, 28, 0] 
+day_color = [255, 28, 0]
+username_color = [255, 0, 255]
+bg_color = [0, 0, 0] # default: background black
+outline_color = [0, 0, 0] # default: no outline
+
+[telegram] # optional: share event messages with telegram bot 
+use_telegram = false
+bot_token = "[enter your telegram bot_token here]" 
+
+# obtain chat_id from https://api.telegram.org/bot<YourBOTToken>/getUpdates
+# to send a test message via browser->bot->telegram, use such a http request
+# https://api.telegram.org/bot<bot_token>/sendMessage?text="just%20a%20test%20message"&chat_id=<chat_id>
+
+# chat_id = [enter chat_id number here] 
+send_snapshot = true # send a photo of authentication attempts via given telegram channel.
+                     # Please, consider data privacy aspects of this parameter -
+                     # especially if the image may include parts of non-private property
+                     # or if General Data Protection Regulation (GDPR) rules may be violated.
 ```
 
 ## Open Sesame <a name = "open_sesame"></a>
@@ -335,9 +380,8 @@ console=serial0,115200 console=tty1 root=PARTUUID=e0d8ecc0-02 rootfstype=ext4 fs
 ```
 This step takes effect after restarting the computer and is intended to prevent any flickering of the LED matrix display. The processor affinity of our program is assigned to the released CPU at the end of the run_smartdoor_F455.sh start script with the taskset command.
 
-## End of Life of Intel RealSenseID F455 <a name = "end_of_life"></a>
-Although Intel announced the RealSense ID product line as a solution for facial biometric authentication in January 2021, it was already discontinued with effect from February 28, 2022. We are currently not aware of an alternative that combines the three-dimensional scan with artificial intelligence for face recognition. So if you want to get hold of such a camera, you need to hurry to get some remaining stock of the camera from the dealers. This Intel website points out this fact:
-[https://www.intelrealsense.com/facial-authentication/](https://www.intelrealsense.com/facial-authentication/)
+## removal of End of Life of Intel RealSenseID F455 <a name = "end_of_life"></a>
+Intel [discontinued the RealSenseID F455 camera on February 28, 2022](https://www.therobotreport.com/wp-content/uploads/2021/09/intel-realsense-end-of-life.pdf), however has withdrawn this product end of life in 2024, spun off the entire Intel RealSense camera line into a separate [RealSense corporation](https://realsenseai.com/) and luckily breathed new life into this camera. You'll find most up to date information on the Facial Authentication products [here](https://realsenseai.com/facial-authentication/). 
 
 ## Troubleshooting <a name = "Troubleshooting"></a>
 When replicating this smart home door opener consisting of a transformer, LED matrix, Raspi and, if necessary, matrix bonnet, small problems can occur here and there, of which we would like to address the known ones here. First to hardware topics:
@@ -402,6 +446,10 @@ Raspberry Pi OS is very robust and makes optimal use of the hardware, but Intel'
 If you want to play funny animations on the LED matrix display, we recommend the example programs under ~/rpi-rgb-led-matrix/utils. Here you can, for example, conjure up gif animations on the LED matrix display with the following command lines: l simply do not initiate the authentication process.
 After restarting the Raspberry Pi computer, it occasionally happens that the camera does not initialize correctly when the application is started for the first time. Exit the program, start it again:
 ```
+# install rpi-rgb-led-matrix by Henner Zeller
+git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
+cd rpi-rgb-led-matrix/
+make -C examples-api-use
 # spinning Super Mario 
 cd ~/rpi-rgb-led-matrix/utils/
 make

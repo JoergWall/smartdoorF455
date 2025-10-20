@@ -1,0 +1,59 @@
+# This is a TOML config file for smartdoorF455
+title = "TOML configuration file for smartdoorF455"
+
+[raspi]
+gpio_sensor_pin = 19 # use 19 as sensor input pin, if Adafruit Bonnet is used else use pin 5
+gpio_sensor_pull = 2 # int value: 0=PUD_OFF, 1=PUD_DOWN, 2=PUD_UP,
+                     # depending on the presence sensor used, the gpio_sensor_pin 
+                     # needs to be pulled up (5V) or down (GND). Values are documented in WiringPI
+                     # library, see https://github.com/WiringPi/WiringPi
+wait_time_until_reauthentication = 5 # wait time until next reauthentication becomes possible again in seconds
+
+[mosquitto] # MQTT used for door intercommunication  
+use_mosquitto = true
+host = "localhost"
+port = 1884
+keepalive = 600
+client_id = "smartdoorF455" # unique client_id
+topic_door = "siedle/exec" # topic to manage door intercommunication
+topic_control = "smartdoorF455" # topic to manage interactions like e.g. user enrollment
+
+[camera] # see https://github.com/IntelRealSense/RealSenseID/blob/master/include/RealSenseID/DeviceConfig.h for camera config data
+         # as this may be altered for future camera software versions
+camera_rotation = "0" #  string values: 0 (default), 90, 180, 270
+security_level = "Low" # string values: High, Medium, Low (default) 
+                       # increasing to Medium or High causes too many
+                       # false spoof reports 
+                       # (my experience, Version 1.3.1 / May 2025)
+algo_flow = "All" # string values: All, FaceDetectionOnly (default), SpoofOnly, RecognitionOnly
+dump_mode = "CroppedFace" # string values: None (default), CroppedFace, FullFrame
+matcher_confidence_level = "High" # string values: High, Medium, Low (default)
+frontal_face_policy = "Moderate" # string values: Strict, Moderate, None (default)
+max_spoofs = 0 # integer value: Specifies the maximum number of consecutive spoofing attempts allowed before the device rejects further authentication requests.
+gpio_auth_toggling = 0 # integer value: Controls whether GPIO toggling is enabled(1) or disabled(0, default) after successful authentication.
+
+[matrix_options] # options for LED matrix display
+hardware_mapping = "adafruit-hat" # string value: adafruit-hat or "" empty string. Specifies, how LED matrix display is connected to Raspberry gpio_sensor_pin
+brightness = 80 # integer value for brightness in percent from 0..100
+pixel_mapper_config = "Rotate:270" # string values: "Rotate:0", "Rotate:90", "Rotate:180", "Rotate:270"
+clock_color = [255, 255, 0] # array of int with values from 0..255
+date_color = [255, 28, 0] 
+day_color = [255, 28, 0]
+username_color = [255, 0, 255]
+bg_color = [0, 0, 0] # default: background black
+outline_color = [0, 0, 0] # default: no outline
+
+[telegram] # optional: share event messages with telegram bot 
+use_telegram = true
+bot_token = "1517999771:AAEDNUVDWtYQiYx3v2jBYuMcy8AJUgAOAA0" # BitBot @WallmoBot
+
+# obtain chat_id from https://api.telegram.org/bot<YourBOTToken>/getUpdates
+# e.g. https://api.telegram.org/bot7283509519:AAHbd2GlX2TAnpmRe6AyD9F0TutmcbArepg/getUpdates
+# to send a test message via browser->bot->telegram, use such a http request
+# https://api.telegram.org/bot<bot_token>/sendMessage?text="just%20a%20test%20message"&chat_id=<chat_id>
+
+chat_id = -4824236555 # BitBot @WallmoBot
+send_snapshot = true # send a photo of authentication attempts via given telegram channel.
+                     # Please, consider data privacy aspects of this parameter -
+                     # especially if the image may include parts of non-private property
+                     # or if General Data Protection Regulation (GDPR) rules may be violated.
