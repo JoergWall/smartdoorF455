@@ -44,15 +44,14 @@ bg_color = [0, 0, 0] # default: background black
 outline_color = [0, 0, 0] # default: no outline
 
 [telegram] # optional: share event messages with telegram bot 
-use_telegram = true
-bot_token = "1517999771:AAEDNUVDWtYQiYx3v2jBYuMcy8AJUgAOAA0" # BitBot @WallmoBot
+use_telegram = false
+bot_token = "[enter your telegram bot_token here]" 
 
 # obtain chat_id from https://api.telegram.org/bot<YourBOTToken>/getUpdates
-# e.g. https://api.telegram.org/bot7283509519:AAHbd2GlX2TAnpmRe6AyD9F0TutmcbArepg/getUpdates
 # to send a test message via browser->bot->telegram, use such a http request
 # https://api.telegram.org/bot<bot_token>/sendMessage?text="just%20a%20test%20message"&chat_id=<chat_id>
 
-chat_id = -4824236555 # BitBot @WallmoBot
+# chat_id = [enter chat_id number here] 
 send_snapshot = true # send a photo of authentication attempts via given telegram channel.
                      # Please, consider data privacy aspects of this parameter -
                      # especially if the image may include parts of non-private property
