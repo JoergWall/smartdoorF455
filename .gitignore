@@ -7,6 +7,8 @@ cmake-build-*/
 *.bak
 *.old
 *.org
+*.zaphod
+*.zaphod2
 .DS_Store
 .vscode/
 .idea/

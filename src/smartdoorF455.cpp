@@ -80,7 +80,7 @@
 #define DATE_FORMAT_STRING "%d.%m" // DD.MM.YY format
 #define DAY_FORMAT_STRING "%A" // name of day according to LOCALE 
 // #define TIME_FORMAT_STRING "%H:%M"    // HH:MM format
-#define FONT_PATH "./external/rpi-rgb-led-matrix-src/fonts/" 
+#define FONT_PATH "../external/rpi-rgb-led-matrix-src/fonts/" 
 #define FONT_TIME FONT_PATH "6x12.bdf"
 #define FONT_DAY  FONT_PATH "4x6.bdf"
 #define FONT_DATE FONT_PATH "6x12.bdf"
@@ -526,126 +526,146 @@ class matrixLEDTask {
 private:
     std::atomic<bool> running{false};
     std::thread worker_thread;
-    // task_function will invoked in separate thread
-    void task_function() {
-        int counter = 0;
+    static rgb_matrix::Color clock_color, date_color, day_color, username_color, bg_color, outline_color;
+    static rgb_matrix::Font font_time, font_date, font_day, font_name;
+    static RGBMatrix::Options matrix_options; 
+    static rgb_matrix::RuntimeOptions runtime_opt;
+    static FrameCanvas *offscreen;
+    static RGBMatrix *matrix;
+    unsigned static int interval_ms;
+    PeriodicExecutor<> executor_a;
+    // render_clock will invoked in separate thread by PeriodicExecutor
+    void render_clock() {
+        static int counter = 0;
         static bool first_run = true;
-        // Initialization of RGB-Matrix-Display
-        FrameCanvas *offscreen;
-        RGBMatrix::Options matrix_options; 
-        rgb_matrix::RuntimeOptions runtime_opt;
-        Color clock_color, date_color, day_color, username_color, bg_color, outline_color;
-        rgb_matrix::Font font_time, font_date, font_day, font_name;
-        
-        // struct tm tm; 
-        // struct timespec cur_time;
-        RGBMatrix *matrix;
-        clock_color = Color((uint8_t)config_toml["matrix_options"]["clock_color"].as_array()->at(0).value_or(255), 
-                            (uint8_t)config_toml["matrix_options"]["clock_color"].as_array()->at(1).value_or(28), 
-                            (uint8_t)config_toml["matrix_options"]["clock_color"].as_array()->at(2).value_or(0));
-
-        date_color = Color((uint8_t)config_toml["matrix_options"]["date_color"].as_array()->at(0).value_or(255), 
-                                (uint8_t)config_toml["matrix_options"]["date_color"].as_array()->at(1).value_or(28), 
-                                (uint8_t)config_toml["matrix_options"]["date_color"].as_array()->at(2).value_or(0));
-        day_color = Color((uint8_t)config_toml["matrix_options"]["day_color"].as_array()->at(0).value_or(255), 
-                                (uint8_t)config_toml["matrix_options"]["day_color"].as_array()->at(1).value_or(28), 
-                                (uint8_t)config_toml["matrix_options"]["day_color"].as_array()->at(2).value_or(0));
-        username_color = Color((uint8_t)config_toml["matrix_options"]["username_color"].as_array()->at(0).value_or(255), 
-                                (uint8_t)config_toml["matrix_options"]["username_color"].as_array()->at(1).value_or(0),      
-                                (uint8_t)config_toml["matrix_options"]["username_color"].as_array()->at(2).value_or(255));
-        bg_color = Color((uint8_t)config_toml["matrix_options"]["bg_color"].as_array()->at(0).value_or(0), 
-                                (uint8_t)config_toml["matrix_options"]["bg_color"].as_array()->at(1).value_or(0), 
-                                (uint8_t)config_toml["matrix_options"]["bg_color"].as_array()->at(2).value_or(0));
-        outline_color = Color((uint8_t)config_toml["matrix_options"]["outline_color"].as_array()->at(0).value_or(0), 
-                                (uint8_t)config_toml["matrix_options"]["outline_color"].as_array()->at(1).value_or(0),            
-                                (uint8_t)config_toml["matrix_options"]["outline_color"].as_array()->at(2).value_or(0));
-        if (!font_date.LoadFont(FONT_DATE) || !font_time.LoadFont(FONT_TIME) // Load fonts. This needs to be a filename with a bdf bitmap font.
-            || !font_day.LoadFont(FONT_DAY) || !font_name.LoadFont(FONT_NAME)) {
-            std::cerr << "Couldn't load fontfiles \n";
-            std::exit(1);
+        if (first_run){
+            pid_t tid;
+            first_run = false;
+            tid = syscall(SYS_gettid);
+            cout << "process id: " << getpid() << ", task_function process id: " << tid << endl;
         }
-        matrix_options.led_rgb_sequence = "RBG"; // set options for LED matrix
-        matrix_options.rows = 32;
-        matrix_options.cols = 64;
-        matrix_options.brightness = config_toml["matrix_options"]["brightness"].value_or(80);
-        matrix_options.pixel_mapper_config = config_toml["matrix_options"]["pixel_mapper_config"].value<std::string>().value().c_str(); // e.g. "Rotate:90"
-        matrix_options.disable_hardware_pulsing = true;
-        matrix_options.hardware_mapping = config_toml["matrix_options"]["hardware_mapping"].value<std::string>().value().c_str(); // e.g. "adafruit-hat"
-        std::cout << "Using hardware mapping: " << matrix_options.hardware_mapping << " - empty string is direct cable connection" << std::endl;
-        matrix = RGBMatrix::CreateFromOptions(matrix_options, runtime_opt);
-        if (matrix == NULL){
-            std::cerr << "Failed to create RGBMatrix" << std::endl;
-            std::exit(1);
+         
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+        std::stringstream ss;
+            
+        counter++;
+        offscreen->Fill(bg_color.r, bg_color.g, bg_color.b); // blank screen
+        ss << std::put_time(std::localtime(&in_time_t), "%H:%M");
+        rgb_matrix::DrawText(offscreen, font_time, 0, LINE_OFFSET_1, clock_color, NULL, ss.str().c_str(), 0);
+        ss.str("");
+        ss << std::put_time(std::localtime(&in_time_t), "%A");
+        rgb_matrix::DrawText(offscreen, font_day, 0, LINE_OFFSET_2, day_color,  NULL, ss.str().c_str(), 0);
+        ss.str("");
+        ss << std::put_time(std::localtime(&in_time_t), "%d.%m"); // %d.%m 
+        rgb_matrix::DrawText(offscreen, font_date, 0, LINE_OFFSET_3, date_color,  NULL, ss.str().c_str(), 0);
+        if (!name_lastauthenticated.load()->empty()){
+            static unsigned int iterations = 0;
+            rgb_matrix::DrawText(offscreen, font_name, 0, LINE_OFFSET_4, username_color, NULL, name_lastauthenticated.load()->c_str(), 0);
+            if (iterations++ > DISPLAY_NAME_IN_ITERATIONS){
+                iterations = 0;
+                name_lastauthenticated.load()->clear(); // reset last authenticated name
+            }
         }
-        offscreen = matrix->CreateFrameCanvas(); // offscreen canvas for double buffering
-        // end Initialization of RGB-Matrix-Display
-        while (running) {
-            auto now = std::chrono::system_clock::now();
-            auto in_time_t = std::chrono::system_clock::to_time_t(now);
-            std::stringstream ss;
-            // thread being executed every DELAY_MSEC interval
-            counter++;
-            offscreen->Fill(bg_color.r, bg_color.g, bg_color.b); // blank screen
-            ss << std::put_time(std::localtime(&in_time_t), "%H:%M");
-            rgb_matrix::DrawText(offscreen, font_time, 0, LINE_OFFSET_1, clock_color, NULL, ss.str().c_str(), 0);
-            ss.str("");
-            ss << std::put_time(std::localtime(&in_time_t), "%A");
-            rgb_matrix::DrawText(offscreen, font_day, 0, LINE_OFFSET_2, day_color,  NULL, ss.str().c_str(), 0);
-            ss.str("");
-            ss << std::put_time(std::localtime(&in_time_t), "%d.%m"); // %d.%m 
-            rgb_matrix::DrawText(offscreen, font_date, 0, LINE_OFFSET_3, date_color,  NULL, ss.str().c_str(), 0);
-            if (!name_lastauthenticated.load()->empty()){
-                static unsigned int iterations = 0;
-                rgb_matrix::DrawText(offscreen, font_name, 0, LINE_OFFSET_4, username_color, NULL, name_lastauthenticated.load()->c_str(), 0);
-                if (iterations++ > DISPLAY_NAME_IN_ITERATIONS){
-                    iterations = 0;
-                    name_lastauthenticated.load()->clear(); // reset last authenticated name
-                }
-            }
+        /* OPEN topic: display authentication hint
+        else if (authentication_hint[0] != '\0'){ 
+        }*/
+        /* be creative and add more information here - scroll stock prices or display weather forecast */
+        offscreen = matrix->SwapOnVSync(offscreen); // swap LEDMatrix double buffer
 
-            /* OPEN topic: display authentication hint
-            else if (authentication_hint[0] != '\0'){ 
-            }*/
-            /* be creative and add more information here - scroll stock prices or display weather forecast */
-            offscreen = matrix->SwapOnVSync(offscreen); // swap LEDMatrix double buffer
-            if (first_run){
-                pid_t tid;
-                first_run = false;
-                tid = syscall(SYS_gettid);
-                cout << "process id: " << getpid() << ", task_function process id: " << tid << endl;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(DELAY_MSEC));
-        } // while running
-        matrix->Clear(); 
-        delete matrix;
-        std::cout << "matrixLEDTask::task_function ended" << std::endl; 
-    } // task_function
+    } // render_clock
     
 public:
     // constructor with default  100ms interval
-    matrixLEDTask(int interval = 100) : running(false) { } // constructor matrixLEDTask
+    matrixLEDTask(int interval = 100) : running(false) { 
+        interval_ms = interval;
+    } // constructor matrixLEDTask
     void start() {
         if (!running) {
             running = true;
-            worker_thread = std::thread(&matrixLEDTask::task_function, this);
-            std::cout << "periodic thread task_function started (" << DELAY_MSEC << "ms interval)" << std::endl;
+            // initialize matrix options, fonts, font colors from config.toml
+            clock_color = Color((uint8_t)config_toml["matrix_options"]["clock_color"].as_array()->at(0).value_or(255), 
+                                (uint8_t)config_toml["matrix_options"]["clock_color"].as_array()->at(1).value_or(28), 
+                                (uint8_t)config_toml["matrix_options"]["clock_color"].as_array()->at(2).value_or(0));
+
+            date_color = Color((uint8_t)config_toml["matrix_options"]["date_color"].as_array()->at(0).value_or(255), 
+                                    (uint8_t)config_toml["matrix_options"]["date_color"].as_array()->at(1).value_or(28), 
+                                    (uint8_t)config_toml["matrix_options"]["date_color"].as_array()->at(2).value_or(0));
+            day_color = Color((uint8_t)config_toml["matrix_options"]["day_color"].as_array()->at(0).value_or(255), 
+                                    (uint8_t)config_toml["matrix_options"]["day_color"].as_array()->at(1).value_or(28), 
+                                    (uint8_t)config_toml["matrix_options"]["day_color"].as_array()->at(2).value_or(0));
+            username_color = Color((uint8_t)config_toml["matrix_options"]["username_color"].as_array()->at(0).value_or(255), 
+                                    (uint8_t)config_toml["matrix_options"]["username_color"].as_array()->at(1).value_or(0),      
+                                    (uint8_t)config_toml["matrix_options"]["username_color"].as_array()->at(2).value_or(255));
+            bg_color = Color((uint8_t)config_toml["matrix_options"]["bg_color"].as_array()->at(0).value_or(0), 
+                                    (uint8_t)config_toml["matrix_options"]["bg_color"].as_array()->at(1).value_or(0), 
+                                    (uint8_t)config_toml["matrix_options"]["bg_color"].as_array()->at(2).value_or(0));
+            outline_color = Color((uint8_t)config_toml["matrix_options"]["outline_color"].as_array()->at(0).value_or(0), 
+                                    (uint8_t)config_toml["matrix_options"]["outline_color"].as_array()->at(1).value_or(0),            
+                                    (uint8_t)config_toml["matrix_options"]["outline_color"].as_array()->at(2).value_or(0));
+            if (!font_date.LoadFont(FONT_DATE) || !font_time.LoadFont(FONT_TIME) // Load fonts. This needs to be a filename with a bdf bitmap font.
+                || !font_day.LoadFont(FONT_DAY) || !font_name.LoadFont(FONT_NAME)) {
+                std::cerr << "Couldn't load fontfiles \n";
+                std::exit(1);
+            }
+            matrix_options.led_rgb_sequence = "RBG"; // set options for LED matrix
+            matrix_options.rows = 32;
+            matrix_options.cols = 64;
+            matrix_options.brightness = config_toml["matrix_options"]["brightness"].value_or(80);
+            matrix_options.pixel_mapper_config = config_toml["matrix_options"]["pixel_mapper_config"].value<std::string>().value().c_str(); // e.g. "Rotate:90"
+            matrix_options.disable_hardware_pulsing = true;
+            matrix_options.hardware_mapping = config_toml["matrix_options"]["hardware_mapping"].value<std::string>().value().c_str(); // e.g. "adafruit-hat"
+            std::cout << "Using hardware mapping: " << matrix_options.hardware_mapping << " - empty string is direct cable connection" << std::endl;
+            matrix = RGBMatrix::CreateFromOptions(matrix_options, runtime_opt);
+            if (matrix == NULL){
+                std::cerr << "Failed to create RGBMatrix" << std::endl;
+                std::exit(1);
+            }
+            offscreen = matrix->CreateFrameCanvas(); // offscreen canvas for double buffering
+            // end Initialization of RGB-Matrix-Display
+            
+            // thread being executed every DELAY_MSEC interval
+
+            executor_a.start(std::chrono::milliseconds(interval_ms), [&]() { matrixLEDTask::render_clock(); });
+            std::cout << "periodic thread task_function started (" << interval_ms << "ms interval)" << std::endl;
         }
     }
     
     void stop() {
         if (running) {
             running = false;
-            if (worker_thread.joinable()) {
-                worker_thread.join(); // wait for the thread to finish
-            }
+            executor_a.stop();
             std::cout << "periodic thread task_function stopped" << std::endl;
         }
-
+        
+        matrix->Clear(); 
+        delete matrix;
+        std::cout << "matrixLEDTask::task_function ended" << std::endl; 
     }
     ~matrixLEDTask() {
         stop();
     }
 };
+
+// Definitions for static members of matrixLEDTask to satisfy the linker.
+rgb_matrix::Color matrixLEDTask::clock_color;
+rgb_matrix::Color matrixLEDTask::date_color;
+rgb_matrix::Color matrixLEDTask::day_color;
+rgb_matrix::Color matrixLEDTask::username_color;
+rgb_matrix::Color matrixLEDTask::bg_color;
+rgb_matrix::Color matrixLEDTask::outline_color;
+
+rgb_matrix::Font matrixLEDTask::font_time;
+rgb_matrix::Font matrixLEDTask::font_date;
+rgb_matrix::Font matrixLEDTask::font_day;
+rgb_matrix::Font matrixLEDTask::font_name;
+
+RGBMatrix::Options matrixLEDTask::matrix_options;
+rgb_matrix::RuntimeOptions matrixLEDTask::runtime_opt;
+FrameCanvas* matrixLEDTask::offscreen = nullptr;
+RGBMatrix* matrixLEDTask::matrix = nullptr;
+
+unsigned int matrixLEDTask::interval_ms = DELAY_MSEC;
 /**
  * @brief Main function for the application.
  *
@@ -671,8 +691,34 @@ int main(int argc, char** argv){
         return 1;
     }
 // init variables with values from toml config file
+    
+    // old:
+    // use_telegram = config_toml["telegram"]["use_telegram"].as_boolean(); // check if telegram bot is used
 
-    use_telegram = config_toml["telegram"]["use_telegram"].as_boolean(); // check if telegram bot is used
+    // improved: safe read with default + light coercion and warning on unexpected types
+    try {
+        auto node = config_toml["telegram"]["use_telegram"];
+        if (!node) {
+            use_telegram = false;
+        } else if (node.is_boolean()) {
+            use_telegram = node.value_or(false);
+        } else if (node.is_string()) {
+            std::string s = node.value<std::string>().value();
+            std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+            use_telegram = (s == "true" || s == "1" || s == "yes" || s == "on");
+            std::cerr << "Warning: telegram.use_telegram is a string; coerced to " << use_telegram << std::endl;
+        } else if (node.is_integer()) {
+            use_telegram = (node.value<long long>().value() != 0);
+            std::cerr << "Warning: telegram.use_telegram is an integer; coerced to " << use_telegram << std::endl;
+        } else {
+            use_telegram = false;
+            std::cerr << "Warning: telegram.use_telegram has unexpected type; defaulting to false" << std::endl;
+        }
+    } catch (const std::exception& e) {
+        use_telegram = false;
+        std::cerr << "Error reading telegram.use_telegram: " << e.what() << " - defaulting to false" << std::endl;
+    }
+
     if (use_telegram){
         send_snapshot = config_toml["telegram"]["send_snapshot"].as_boolean(); // check if telegram bot shall be used to send photo
         bot_token_string = config_toml["telegram"]["bot_token"].value<std::string>().value();
@@ -760,10 +806,8 @@ int main(int argc, char** argv){
     matrixLEDTask matrix_task(DELAY_MSEC); // create matrixLEDTask object with DELAY_MSEC ms interval
     matrix_task.start(); // start matrix LED task
     while (!interrupt_received){
-
         std::this_thread::sleep_for(std::chrono::seconds(10));
-        // std::this_thread::sleep_for(std::chrono::milliseconds(DELAY_MSEC));
-        // usleep(DELAY_USEC); // delay in microseconds; adjust frequency to match potential scrolling or animation patterns 
+  
     } // end while (!interrupt_received)
     
     if(use_mosquitto){

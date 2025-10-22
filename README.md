@@ -1,5 +1,8 @@
+# smartdoorF455 - door opener with biometric facial authentication 
 <p align="right">
-  <a href="./README_DE.md" rel="noopener">GERMAN VERSION</a>
+<!---
+ <a href="./README_DE.md" rel="noopener">GERMAN VERSION</a>
+-->
 <p align="center">
   <a href="" rel="noopener">
  <img width=251px height=513px src="images/small/01_mounted_smartdoorF455_side-view.JPG" alt="smart door opener with facial authentication"></a>
@@ -9,8 +12,9 @@
 
 <div align="center">
 
-
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+![C++](https://img.shields.io/badge/C%2B%2B-11%2F14%2F17-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)
 
 </div>
 
