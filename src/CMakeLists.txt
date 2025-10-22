@@ -10,6 +10,7 @@
 # - OpenCV for computer vision tasks
 # - OpenSSL for encryption and TLS support
 # - mosquitto for MQTT communication
+# - Boost libraries for threading and chrono functionalities
 # via FetchContent:
 # - tomlplusplus for TOML parsing from https://github.com/marzer/tomlplusplus
 # - WiringPi for GPIO access from https://github.com/WiringPi/WiringPi
@@ -53,7 +54,7 @@ find_package(OpenSSL REQUIRED)
 # Find mosquitto (typically a system library on Linux/RPi)
 # We use find_library as mosquitto may not provide a config file for find_package
 find_library(MOSQUITTO_LIB NAMES mosquitto REQUIRED)
-
+find_package(Boost REQUIRED COMPONENTS thread chrono)
 
 
 # --- FetchContent Dependencies ---
@@ -179,11 +180,14 @@ target_link_libraries(${EXE_NAME} PRIVATE
     ${RGBMATRIX_FINAL} # Link to the IMPORTED target created by ExternalProject_Add
     TgBot
     mosquitto
-    ssl
-    crypto
+    OpenSSL::SSL 
+    OpenSSL::Crypto
     opencv_core
     opencv_videoio
     opencv_imgcodecs
+    Boost::boost 
+    Boost::thread 
+    Boost::chrono 
 )
 
 install(TARGETS ${EXE_NAME} DESTINATION /usr/local/bin)

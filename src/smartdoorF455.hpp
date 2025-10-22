@@ -66,7 +66,7 @@
 using namespace rgb_matrix;
 using namespace std;
 using namespace RealSenseID;
-#define CONFIG_FILE "../cpp/config.toml" 
+#define CONFIG_FILE "./config.toml" 
 
 /**
  * @see https://stackoverflow.com/questions/7163069/c-string-to-enum
@@ -103,5 +103,6 @@ static std::unordered_map<std::string,RealSenseID::DeviceConfig::FrontalFacePoli
    {"Strict",RealSenseID::DeviceConfig::FrontalFacePolicy::Strict}, 
    {"Moderate",RealSenseID::DeviceConfig::FrontalFacePolicy::Moderate},
    {"None",RealSenseID::DeviceConfig::FrontalFacePolicy::None} };
+
 
 
