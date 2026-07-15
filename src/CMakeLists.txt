@@ -31,7 +31,12 @@ if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 set(EXE_NAME smartdoorF455)
-add_executable(${EXE_NAME} smartdoorF455.cpp)
+add_executable(${EXE_NAME}
+    main.cpp
+    application.cpp
+    config.cpp
+    matrix_display.cpp
+)
 
 
 if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
@@ -53,8 +58,17 @@ find_package(OpenSSL REQUIRED)
 
 # Find mosquitto (typically a system library on Linux/RPi)
 # We use find_library as mosquitto may not provide a config file for find_package
-find_library(MOSQUITTO_LIB NAMES mosquitto REQUIRED)
-find_package(Boost REQUIRED COMPONENTS thread chrono)
+find_library(MOSQUITTO_LIB NAMES mosquitto PATHS /usr/lib /usr/lib/aarch64-linux-gnu /usr/local/lib /usr/local/lib/aarch64-linux-gnu REQUIRED)
+
+# Locate Boost includes and libraries (thread, chrono)
+find_path(BOOST_INCLUDE_DIR NAMES boost/version.hpp PATHS /usr/include /usr/include/aarch64-linux-gnu /usr/local/include /usr/local/include/aarch64-linux-gnu REQUIRED)
+find_library(BOOST_THREAD_LIB NAMES boost_thread boost_thread-mt PATHS /usr/lib /usr/lib/aarch64-linux-gnu /usr/local/lib /usr/local/lib/aarch64-linux-gnu REQUIRED)
+find_library(BOOST_CHRONO_LIB NAMES boost_chrono boost_chrono-mt PATHS /usr/lib /usr/lib/aarch64-linux-gnu /usr/local/lib /usr/local/lib/aarch64-linux-gnu REQUIRED)
+
+target_include_directories(${EXE_NAME} PRIVATE ${BOOST_INCLUDE_DIR})
+
+# Try to find system wiringPi library (may be provided by system)
+find_library(WIRINGPI_LIB NAMES wiringPi PATHS /usr/lib /usr/lib/aarch64-linux-gnu /usr/local/lib /usr/local/lib/aarch64-linux-gnu)
 
 
 # --- FetchContent Dependencies ---
@@ -81,7 +95,7 @@ FetchContent_Declare(
 # include tgbot-cpp via FetchContent
 # git ls-remote --tags https://github.com/reo7sp/tgbot-cpp.git
 FetchContent_Declare(
-  tgbot-cpp
+  tgbotcpp
   GIT_REPOSITORY https://github.com/reo7sp/tgbot-cpp
   GIT_TAG f52c0b841550a74045e37c9d17a2011c355a08df # v1.9.1,
 )
@@ -102,7 +116,7 @@ FetchContent_Declare(
 )
 
 # Populate dependencies that provide a CMakeLists.txt
-FetchContent_MakeAvailable(PeriodicExecutor RealSenseID tgbot-cpp tomlplusplus WiringPi)
+FetchContent_MakeAvailable(PeriodicExecutor RealSenseID tgbotcpp tomlplusplus WiringPi)
 
 # --- rpi-rgb-led-matrix via ExternalProject_Add ---
 # Use ExternalProject_Add because it has no CMakeLists.txt and must be built via Makefile.
@@ -150,6 +164,16 @@ set_target_properties(rgbmatrix_external PROPERTIES
 # Ensure main executable is built after the external project
 add_dependencies(${EXE_NAME} rpi_rgbmatrix_ep)
 
+add_custom_command(TARGET ${EXE_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_SOURCE_DIR}/bin/fonts"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${RPI_RGB_LED_MATRIX_SOURCE_DIR}/fonts/4x6.bdf"
+        "${CMAKE_SOURCE_DIR}/bin/fonts/4x6.bdf"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${RPI_RGB_LED_MATRIX_SOURCE_DIR}/fonts/6x12.bdf"
+        "${CMAKE_SOURCE_DIR}/bin/fonts/6x12.bdf"
+)
+
 set(RGBMATRIX_FINAL rgbmatrix_external) # Define the link target name
 
 # ---
@@ -162,7 +186,7 @@ target_include_directories(${EXE_NAME} PRIVATE
     "${PeriodicExecutor_SOURCE_DIR}/include"
     "${tomlplusplus_SOURCE_DIR}/include"
     "${tomlplusplus_SOURCE_DIR}/single_include"
-    "${tgbot-cpp_SOURCE_DIR}/include"
+    "${tgbotcpp_SOURCE_DIR}/include"
     "${RealSenseID_SOURCE_DIR}/include"
     # Include the rpi-rgb-led-matrix headers using the source directory path
     "${RPI_RGB_LED_MATRIX_SOURCE_DIR}/include"
@@ -176,18 +200,15 @@ add_definitions("-DBOOST_BIND_GLOBAL_PLACEHOLDERS")
 target_link_libraries(${EXE_NAME} PRIVATE
     tomlplusplus::tomlplusplus
     rsid
-    wiringPi
+  ${WIRINGPI_LIB}
     ${RGBMATRIX_FINAL} # Link to the IMPORTED target created by ExternalProject_Add
     TgBot
-    mosquitto
+  ${MOSQUITTO_LIB}
     OpenSSL::SSL 
     OpenSSL::Crypto
-    opencv_core
-    opencv_videoio
-    opencv_imgcodecs
-    Boost::boost 
-    Boost::thread 
-    Boost::chrono 
+  ${OpenCV_LIBS}
+    ${BOOST_THREAD_LIB}
+    ${BOOST_CHRONO_LIB}
 )
 
 install(TARGETS ${EXE_NAME} DESTINATION /usr/local/bin)

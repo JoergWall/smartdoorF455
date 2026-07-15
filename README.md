@@ -26,28 +26,33 @@
 
 ## 📝 Table of Contents
 
-- [About](#about)
-- [Getting Started](#getting_started)
-- [Prerequisites](#prerequs)
-- [Functionality](#functionality)
-- [Hardware Setup](#hardware_setup)
-- [Wiring](#wiring)
-- [Presence Sensor](#presence_sensor)
-- [Case Installation](#case_installation)
-- [Software Installation](#install)
-- [Usage](#usage)
-- [Teach faces for authentication](#teach_faces)
-- [System Configuration](#system_configuration)
-- [Open Sesame](#open_sesame)
-- [Camera Security](#camera_security)
-- [End of Life of Intel ReaSenseID F455](#end_of_life)
-- [Troubleshooting](#troubleshooting)
-- [Ideas for Changes and Enhancements](#changes_enhancements)
-- [Conclusion](#conclusion)
-- [Video](#video)
-- [Built Using](#built_using)
-- [Author](#author)
-- [Acknowledgments](#acknowledgement)
+- [smartdoorF455 - door opener with biometric facial authentication](#smartdoorf455---door-opener-with-biometric-facial-authentication)
+  - [📝 Table of Contents](#-table-of-contents)
+  - [🧐 About ](#-about-)
+  - [🏁 Getting Started ](#-getting-started-)
+  - [🔨 Prerequisites ](#-prerequisites-)
+  - [Functionality ](#functionality-)
+  - [Hardware Setup ](#hardware-setup-)
+  - [Wiring ](#wiring-)
+  - [Presence Sensor ](#presence-sensor-)
+  - [Case installation ](#case-installation-)
+  - [💾 Software Installation ](#-software-installation-)
+  - [📚 Documentation ](#-documentation-)
+  - [🎈 Usage ](#-usage-)
+  - [Teach faces for authentication ](#teach-faces-for-authentication-)
+  - [System configuration  ](#system-configuration--)
+  - [Open Sesame ](#open-sesame-)
+  - [Mosquitto MQTT Broker ](#mosquitto-mqtt-broker-)
+  - [Camera security ](#camera-security-)
+  - [Optimization ](#optimization-)
+  - [removal of End of Life of Intel RealSenseID F455 ](#removal-of-end-of-life-of-intel-realsenseid-f455-)
+  - [Troubleshooting ](#troubleshooting-)
+  - [Changes and enhancements](#changes-and-enhancements)
+  - [Conclusion](#conclusion)
+  - [🎥 Video ](#-video-)
+  - [⛏️ Built Using ](#️-built-using-)
+  - [✍️ Author ](#️-author-)
+  - [🎉 Acknowledgements ](#-acknowledgements-)
 
 ## 🧐 About <a name = "about"></a>
 
@@ -186,25 +191,40 @@ sudo make install
 ```
 
 
+## 📚 Documentation <a name="documentation"></a>
+
+The source tree is documented with Doxygen-style comments in the core headers and implementation files. To generate a local HTML reference, run:
+
+```bash
+cd /home/joerg/smartdoorF455-1
+doxygen src/doxygen.conf
+```
+
+The generated documentation will be written to the `docs/` output directory configured in the Doxygen file. The main application entry point is in [src/main.cpp](src/main.cpp), with the runtime orchestration in [src/application.hpp](src/application.hpp), configuration handling in [src/config.hpp](src/config.hpp) and display rendering in [src/matrix_display.hpp](src/matrix_display.hpp).
+
 ## 🎈 Usage <a name="usage"></a>
 
-The compiled C++ binary executable "smartdoorF455" should now exist in the ~/smartdoorF455/bin directory. The source codes can be found in ~/smartdoorF455/cpp or ~/smartdoorF455/c. The program is started via shell script with sudo:
+The compiled C++ binary executable "smartdoorF455" should now exist in the ~/smartdoorF455/bin directory. The source codes can be found in ~/smartdoorF455/src. The program is started via the launcher script:
 
 ```
 cd ~/smartdoorF455/bin
-sudo ./run_smartdoorF455.sh 
+./run_smartdoorF455.sh start
 ```
 
-and provides the following output depending on the user name and time/date:
-```
-/home/pi/log created
-smartdoorF455 started successfully
-watch /home/pi/log/20211216_092446_smartdoorF455.log for errors
+Useful commands are:
+
+```bash
+./run_smartdoorF455.sh status
+./run_smartdoorF455.sh stop
+./run_smartdoorF455.sh restart
+./run_smartdoorF455.sh start --config /path/to/custom-config.toml
+./run_smartdoorF455.sh start --logdir /path/to/logs --no-taskset
 ```
 
-Even if the camera has not yet rehearsed a face, the time, the day of the week and the date should now be visible. If this is not the case, please go to the chapter [Troubleshooting](#Troubleshooting). To abort the program, please use the martial command:
-```
-sudo killall smartdoorF455
+The launcher writes its log output to the `log/` directory inside the script folder and keeps a PID file there. If the application is running correctly, the status output reports the current PID. Even if the camera has not yet rehearsed a face, the time, the day of the week and the date should now be visible. If this is not the case, please go to the chapter [Troubleshooting](#Troubleshooting). To abort the program, you can also use:
+
+```bash
+./run_smartdoorF455.sh stop
 ```
 
 ## Teach faces for authentication <a name = "teach_faces"></a>
