@@ -13,3 +13,5 @@ cmake-build-*/
 .vscode/
 .idea/
 external/
+bin/config.toml
+!bin/config.toml.example
