@@ -223,10 +223,16 @@ bool Application::initTelegram()
 
 void Application::onPresenceDetected(const WPIWfiStatus& wfiStatus)
 {
+    // Prevent concurrent authentication attempts
+    if (authenticationInProgress_.exchange(true, std::memory_order_acq_rel)) {
+        return; // Authentication already in progress
+    }
+
     const auto now = std::chrono::steady_clock::now();
     if (!firstPresence_) {
         auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - lastPresenceTime_);
         if (wfiStatus.statusOK != 1 || elapsed.count() < waitTimeUntilReauth_) {
+            authenticationInProgress_.store(false, std::memory_order_release);
             return;
         }
     }
@@ -235,10 +241,12 @@ void Application::onPresenceDetected(const WPIWfiStatus& wfiStatus)
     lastPresenceTime_ = now;
     if (!authenticator_) {
         std::cerr << "No authenticator available" << std::endl;
+        authenticationInProgress_.store(false, std::memory_order_release);
         return;
     }
 
     authenticator_->Authenticate(authCallback_);
+    authenticationInProgress_.store(false, std::memory_order_release);
     if (sendSnapshot_ && useTelegram_) {
         takeSnapshotAndSend();
     }
@@ -323,6 +331,17 @@ void Application::takeSnapshotAndSend()
 std::string Application::getLastAuthenticatedName() const
 {
     std::lock_guard<std::mutex> lock(lastAuthenticatedNameMutex_);
+    
+    // Check if timeout has expired (5 seconds)
+    const auto now = std::chrono::steady_clock::now();
+    const auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - nameSetTime_);
+    
+    if (!lastAuthenticatedName_.empty() && elapsed.count() >= NAME_DISPLAY_TIMEOUT_SEC) {
+        // Clear the name after timeout
+        const_cast<Application*>(this)->lastAuthenticatedName_.clear();
+        return "";
+    }
+    
     return lastAuthenticatedName_;
 }
 
@@ -330,6 +349,7 @@ void Application::setLastAuthenticatedName(const std::string& name)
 {
     std::lock_guard<std::mutex> lock(lastAuthenticatedNameMutex_);
     lastAuthenticatedName_ = name;
+    nameSetTime_ = std::chrono::steady_clock::now(); // Record when the name was set
 }
 
 std::string Application::getHomeDirectory() const

@@ -172,8 +172,11 @@ private:
     std::atomic<bool> interruptRequested_{false};
     mutable std::mutex lastAuthenticatedNameMutex_;
     std::string lastAuthenticatedName_;
+    std::chrono::steady_clock::time_point nameSetTime_ = std::chrono::steady_clock::now();
+    static constexpr int NAME_DISPLAY_TIMEOUT_SEC = 5; // Display authenticated name for 5 seconds
     bool firstPresence_{true};
     std::chrono::steady_clock::time_point lastPresenceTime_ = std::chrono::steady_clock::now();
+    std::atomic<bool> authenticationInProgress_{false};
 
     bool useTelegram_ = false;
     bool sendSnapshot_ = false;
