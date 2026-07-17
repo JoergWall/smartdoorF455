@@ -165,13 +165,13 @@ set_target_properties(rgbmatrix_external PROPERTIES
 add_dependencies(${EXE_NAME} rpi_rgbmatrix_ep)
 
 add_custom_command(TARGET ${EXE_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_SOURCE_DIR}/bin/fonts"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_SOURCE_DIR}/fonts"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${RPI_RGB_LED_MATRIX_SOURCE_DIR}/fonts/4x6.bdf"
-        "${CMAKE_SOURCE_DIR}/bin/fonts/4x6.bdf"
+        "${CMAKE_SOURCE_DIR}/fonts/4x6.bdf"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${RPI_RGB_LED_MATRIX_SOURCE_DIR}/fonts/6x12.bdf"
-        "${CMAKE_SOURCE_DIR}/bin/fonts/6x12.bdf"
+        "${CMAKE_SOURCE_DIR}/fonts/6x12.bdf"
 )
 
 set(RGBMATRIX_FINAL rgbmatrix_external) # Define the link target name

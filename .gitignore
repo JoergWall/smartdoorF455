@@ -3,6 +3,7 @@ build/
 log/
 snapshots/
 cmake-build-*/
+*.pid
 *.log
 *.tmp
 *.bak

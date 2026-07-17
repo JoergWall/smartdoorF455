@@ -40,8 +40,8 @@ echo "$STATUS_OUTPUT" | grep -q "not running"
 
 echo "OK: status before start"
 
-# Start with custom config and no taskset
-bash ./run_smartdoorF455.sh start --config "$TMPDIR/custom-config.toml" --no-taskset
+# Start with custom config and no taskset (keep logs inside the test sandbox)
+bash ./run_smartdoorF455.sh start --config "$TMPDIR/custom-config.toml" --logdir "$TMPDIR/log" --no-taskset
 sleep 1
 
 if [ ! -f "$TMPDIR/log/smartdoorF455.pid" ]; then

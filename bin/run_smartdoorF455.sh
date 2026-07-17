@@ -5,7 +5,8 @@ IFS=$'\n\t'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROGDIR="$SCRIPT_DIR"
 PROG="$PROGDIR/smartdoorF455"
-LOGDIR="$PROGDIR/log"
+# Logs live one level above the binary (project root), not inside bin/.
+LOGDIR="$(cd "$SCRIPT_DIR/.." && pwd)/log"
 PIDFILE="$LOGDIR/smartdoorF455.pid"
 CPU_AFFINITY=3
 CONFIG_PATH="$PROGDIR/config.toml"
