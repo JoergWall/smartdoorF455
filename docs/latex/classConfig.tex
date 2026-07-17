@@ -1,0 +1,116 @@
+\doxysection{Config Class Reference}
+\hypertarget{classConfig}{}\label{classConfig}\index{Config@{Config}}
+
+
+Typed access to TOML configuration values.  
+
+
+
+
+{\ttfamily \#include $<$config.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classConfig_a1fea39f91ca945e3e75602b33abcdd79}{load\+File}} (const std\+::string \&path, std\+::string \&error)
+\begin{DoxyCompactList}\small\item\em Load configuration from a TOML file. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classConfig_a91e84fa0b0764fcf2af2f57d716f26d9}{has}} (const std\+::string \&dotted\+Path) const
+\begin{DoxyCompactList}\small\item\em Check whether a dotted configuration path exists. \end{DoxyCompactList}\item 
+\Hypertarget{classConfig_acd2f291bc350e3441d69ac99dfa5a1da}\label{classConfig_acd2f291bc350e3441d69ac99dfa5a1da} 
+bool {\bfseries get\+Bool} (const std\+::string \&dotted\+Path, bool default\+Value) const
+\begin{DoxyCompactList}\small\item\em Read a boolean option from the configuration. \end{DoxyCompactList}\item 
+\Hypertarget{classConfig_a76707889b4187f790f0a5d9594ae60a5}\label{classConfig_a76707889b4187f790f0a5d9594ae60a5} 
+int {\bfseries get\+Int} (const std\+::string \&dotted\+Path, int default\+Value) const
+\begin{DoxyCompactList}\small\item\em Read an integer option from the configuration. \end{DoxyCompactList}\item 
+\Hypertarget{classConfig_a446a5504b8ffac41563d29540a39c726}\label{classConfig_a446a5504b8ffac41563d29540a39c726} 
+long {\bfseries get\+Long} (const std\+::string \&dotted\+Path, long default\+Value) const
+\begin{DoxyCompactList}\small\item\em Read a long integer option from the configuration. \end{DoxyCompactList}\item 
+\Hypertarget{classConfig_a36b095297aa5c04cb2dce46b74eabe42}\label{classConfig_a36b095297aa5c04cb2dce46b74eabe42} 
+std\+::string {\bfseries get\+String} (const std\+::string \&dotted\+Path, const std\+::string \&default\+Value) const
+\begin{DoxyCompactList}\small\item\em Read a string option from the configuration. \end{DoxyCompactList}\item 
+\Hypertarget{classConfig_a63d9bbac9574fceab516f7db6ac78602}\label{classConfig_a63d9bbac9574fceab516f7db6ac78602} 
+std\+::array$<$ uint8\+\_\+t, 3 $>$ {\bfseries get\+Color} (const std\+::string \&dotted\+Path, const std\+::array$<$ uint8\+\_\+t, 3 $>$ \&default\+Value) const
+\begin{DoxyCompactList}\small\item\em Read an RGB color definition from the configuration. \end{DoxyCompactList}\item 
+\Hypertarget{classConfig_a5d97914350e2a8fb0f4239e4a3c199f0}\label{classConfig_a5d97914350e2a8fb0f4239e4a3c199f0} 
+std\+::vector$<$ int $>$ {\bfseries get\+Int\+Array} (const std\+::string \&dotted\+Path, const std\+::vector$<$ int $>$ \&default\+Value) const
+\begin{DoxyCompactList}\small\item\em Read an integer array from the configuration. \end{DoxyCompactList}\item 
+Real\+Sense\+ID\+::\+Device\+Config \mbox{\hyperlink{classConfig_ae09d0891a1c5adfa07bfed3ea80b1a19}{get\+Device\+Config}} () const
+\begin{DoxyCompactList}\small\item\em Convert the configuration into the Real\+Sense ID device configuration structure. \end{DoxyCompactList}\item 
+const toml\+::table \& \mbox{\hyperlink{classConfig_a9d28f0953732334578ca89aee95ab64a}{table}} () const
+\begin{DoxyCompactList}\small\item\em Access the underlying TOML table. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Typed access to TOML configuration values. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classConfig_ae09d0891a1c5adfa07bfed3ea80b1a19}\label{classConfig_ae09d0891a1c5adfa07bfed3ea80b1a19} 
+\index{Config@{Config}!getDeviceConfig@{getDeviceConfig}}
+\index{getDeviceConfig@{getDeviceConfig}!Config@{Config}}
+\doxysubsubsection{\texorpdfstring{getDeviceConfig()}{getDeviceConfig()}}
+{\footnotesize\ttfamily Real\+Sense\+ID\+::\+Device\+Config Config\+::get\+Device\+Config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Convert the configuration into the Real\+Sense ID device configuration structure. 
+
+\begin{DoxyReturn}{Returns}
+Device configuration suitable for the authenticator. 
+\end{DoxyReturn}
+\Hypertarget{classConfig_a91e84fa0b0764fcf2af2f57d716f26d9}\label{classConfig_a91e84fa0b0764fcf2af2f57d716f26d9} 
+\index{Config@{Config}!has@{has}}
+\index{has@{has}!Config@{Config}}
+\doxysubsubsection{\texorpdfstring{has()}{has()}}
+{\footnotesize\ttfamily bool Config\+::has (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dotted\+Path }\end{DoxyParamCaption}) const}
+
+
+
+Check whether a dotted configuration path exists. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dotted\+Path} & Path such as "{}camera.\+camera\+\_\+rotation"{}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when the path exists. 
+\end{DoxyReturn}
+\Hypertarget{classConfig_a1fea39f91ca945e3e75602b33abcdd79}\label{classConfig_a1fea39f91ca945e3e75602b33abcdd79} 
+\index{Config@{Config}!loadFile@{loadFile}}
+\index{loadFile@{loadFile}!Config@{Config}}
+\doxysubsubsection{\texorpdfstring{loadFile()}{loadFile()}}
+{\footnotesize\ttfamily bool Config\+::load\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{path,  }\item[{std\+::string \&}]{error }\end{DoxyParamCaption})}
+
+
+
+Load configuration from a TOML file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & Path to the configuration file. \\
+\hline
+{\em error} & Receives a human readable error when parsing fails. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true on success, false otherwise. 
+\end{DoxyReturn}
+\Hypertarget{classConfig_a9d28f0953732334578ca89aee95ab64a}\label{classConfig_a9d28f0953732334578ca89aee95ab64a} 
+\index{Config@{Config}!table@{table}}
+\index{table@{table}!Config@{Config}}
+\doxysubsubsection{\texorpdfstring{table()}{table()}}
+{\footnotesize\ttfamily const toml\+::table \& Config\+::table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Access the underlying TOML table. 
+
+\begin{DoxyReturn}{Returns}
+Read-\/only TOML table. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{config_8hpp}{config.\+hpp}}\item 
+src/\mbox{\hyperlink{config_8cpp}{config.\+cpp}}\end{DoxyCompactItemize}

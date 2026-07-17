@@ -1,0 +1,109 @@
+\doxysection{Auth\+Callback Class Reference}
+\hypertarget{classAuthCallback}{}\label{classAuthCallback}\index{AuthCallback@{AuthCallback}}
+
+
+Callback bridge for authentication events emitted by the Real\+Sense ID SDK.  
+
+
+
+
+{\ttfamily \#include $<$application.\+hpp$>$}
+
+
+
+Inheritance diagram for Auth\+Callback\+:
+% FIG 0
+
+
+Collaboration diagram for Auth\+Callback\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classAuthCallback_ab63e014a8b18df46992b3505c41815d7}{Auth\+Callback}} (\mbox{\hyperlink{classApplication}{Application}} \&application)
+\begin{DoxyCompactList}\small\item\em Construct a callback that forwards results back to the application. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classAuthCallback_afc2152b99306b344e7b7adb6c49ad9dd}{On\+Result}} (const Real\+Sense\+ID\+::\+Authenticate\+Status status, const char \texorpdfstring{$\ast$}{*}user\+\_\+id) override
+\begin{DoxyCompactList}\small\item\em Handle a completed authentication attempt. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classAuthCallback_a5a92d03f62b8b0bad3293ccc3d4d903d}{On\+Hint}} (const Real\+Sense\+ID\+::\+Authenticate\+Status hint) override
+\begin{DoxyCompactList}\small\item\em Handle authentication hints provided by the SDK. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classAuthCallback_ae3dadffe5fb9ad4b8099dd73d7073838}{On\+Face\+Detected}} (const std\+::vector$<$ Real\+Sense\+ID\+::\+Face\+Rect $>$ \&faces, const unsigned int ts) override
+\begin{DoxyCompactList}\small\item\em Handle detected faces reported by the SDK. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Callback bridge for authentication events emitted by the Real\+Sense ID SDK. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classAuthCallback_ab63e014a8b18df46992b3505c41815d7}\label{classAuthCallback_ab63e014a8b18df46992b3505c41815d7} 
+\index{AuthCallback@{AuthCallback}!AuthCallback@{AuthCallback}}
+\index{AuthCallback@{AuthCallback}!AuthCallback@{AuthCallback}}
+\doxysubsubsection{\texorpdfstring{AuthCallback()}{AuthCallback()}}
+{\footnotesize\ttfamily Auth\+Callback\+::\+Auth\+Callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classApplication}{Application}} \&}]{application }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Construct a callback that forwards results back to the application. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em application} & Parent application instance. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classAuthCallback_ae3dadffe5fb9ad4b8099dd73d7073838}\label{classAuthCallback_ae3dadffe5fb9ad4b8099dd73d7073838} 
+\index{AuthCallback@{AuthCallback}!OnFaceDetected@{OnFaceDetected}}
+\index{OnFaceDetected@{OnFaceDetected}!AuthCallback@{AuthCallback}}
+\doxysubsubsection{\texorpdfstring{OnFaceDetected()}{OnFaceDetected()}}
+{\footnotesize\ttfamily void Auth\+Callback\+::\+On\+Face\+Detected (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ Real\+Sense\+ID\+::\+Face\+Rect $>$ \&}]{faces,  }\item[{const unsigned int}]{ts }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Handle detected faces reported by the SDK. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em faces} & Faces detected in the current frame. \\
+\hline
+{\em ts} & Timestamp of the detection event. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classAuthCallback_a5a92d03f62b8b0bad3293ccc3d4d903d}\label{classAuthCallback_a5a92d03f62b8b0bad3293ccc3d4d903d} 
+\index{AuthCallback@{AuthCallback}!OnHint@{OnHint}}
+\index{OnHint@{OnHint}!AuthCallback@{AuthCallback}}
+\doxysubsubsection{\texorpdfstring{OnHint()}{OnHint()}}
+{\footnotesize\ttfamily void Auth\+Callback\+::\+On\+Hint (\begin{DoxyParamCaption}\item[{const Real\+Sense\+ID\+::\+Authenticate\+Status}]{hint }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Handle authentication hints provided by the SDK. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hint} & Hint code returned during processing. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classAuthCallback_afc2152b99306b344e7b7adb6c49ad9dd}\label{classAuthCallback_afc2152b99306b344e7b7adb6c49ad9dd} 
+\index{AuthCallback@{AuthCallback}!OnResult@{OnResult}}
+\index{OnResult@{OnResult}!AuthCallback@{AuthCallback}}
+\doxysubsubsection{\texorpdfstring{OnResult()}{OnResult()}}
+{\footnotesize\ttfamily void Auth\+Callback\+::\+On\+Result (\begin{DoxyParamCaption}\item[{const Real\+Sense\+ID\+::\+Authenticate\+Status}]{status,  }\item[{const char \texorpdfstring{$\ast$}{*}}]{user\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Handle a completed authentication attempt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em status} & Result of the authentication process. \\
+\hline
+{\em user\+\_\+id} & Identifier returned for a recognized user. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{application_8hpp}{application.\+hpp}}\item 
+src/\mbox{\hyperlink{application_8cpp}{application.\+cpp}}\end{DoxyCompactItemize}

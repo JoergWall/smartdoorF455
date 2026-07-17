@@ -1,0 +1,32 @@
+\doxysection{src/matrix\+\_\+display.hpp File Reference}
+\hypertarget{matrix__display_8hpp}{}\label{matrix__display_8hpp}\index{src/matrix\_display.hpp@{src/matrix\_display.hpp}}
+
+
+Wrapper around the RGB LED matrix display.  
+
+
+{\ttfamily \#include $<$atomic$>$}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include "{}config.\+hpp"{}}\newline
+{\ttfamily \#include "{}Periodic\+Executor.\+hpp"{}}\newline
+{\ttfamily \#include "{}graphics.\+h"{}}\newline
+{\ttfamily \#include "{}led-\/matrix.\+h"{}}\newline
+{\ttfamily \#include $<$ctime$>$}\newline
+Include dependency graph for matrix\+\_\+display.\+hpp\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classMatrixDisplay}{Matrix\+Display}}
+\begin{DoxyCompactList}\small\item\em Render time and authentication state on an RGB LED matrix. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Wrapper around the RGB LED matrix display. 
+
+The \doxylink{classMatrixDisplay}{Matrix\+Display} class initializes the LED panel, renders the clock and user information and provides a safe no-\/op fallback when the hardware is unavailable. 

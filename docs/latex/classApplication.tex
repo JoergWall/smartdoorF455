@@ -1,0 +1,142 @@
+\doxysection{Application Class Reference}
+\hypertarget{classApplication}{}\label{classApplication}\index{Application@{Application}}
+
+
+Main controller for the smartdoor\+F455 application lifecycle.  
+
+
+
+
+{\ttfamily \#include $<$application.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classApplication_afa8cc05ce6b6092be5ecdfdae44e05f8}\label{classApplication_afa8cc05ce6b6092be5ecdfdae44e05f8} 
+{\bfseries Application} ()
+\begin{DoxyCompactList}\small\item\em Construct a new application instance. \end{DoxyCompactList}\item 
+\Hypertarget{classApplication_a748bca84fefb9c12661cfaa2f623748d}\label{classApplication_a748bca84fefb9c12661cfaa2f623748d} 
+{\bfseries \texorpdfstring{$\sim$}{\string~}\+Application} ()
+\begin{DoxyCompactList}\small\item\em Destroy the application and release owned resources. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classApplication_af96bf679985f69a10ece38ba342f3d77}{initialize}} (const std\+::string \&config\+Path)
+\begin{DoxyCompactList}\small\item\em Initialize all subsystems from a TOML configuration file. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classApplication_a8cf8941c8db90117d3735bce5ae1fdf4}{run}} ()
+\begin{DoxyCompactList}\small\item\em Run the application event loop until interrupted. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classApplication_a8ae452496afaf54e57470314f44cac3f}{on\+Presence\+Detected}} (const WPIWfi\+Status \&wfi\+Status)
+\begin{DoxyCompactList}\small\item\em React to a presence event from the sensor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classApplication_a1c1d679b9c7efc0c73a3825555d867c9}{handle\+Authentication\+Result}} (const Real\+Sense\+ID\+::\+Authenticate\+Status status, const char \texorpdfstring{$\ast$}{*}user\+Id)
+\begin{DoxyCompactList}\small\item\em Handle the result of an authentication attempt. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classApplication_a75d566d8af5b8cef037da979d66cadfa}{send\+Telegram\+Text}} (const std\+::string \&message)
+\begin{DoxyCompactList}\small\item\em Send a text message through Telegram when enabled. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classApplication_ae61f830ad552b86fed95f9484968b77e}\label{classApplication_ae61f830ad552b86fed95f9484968b77e} 
+void {\bfseries presence\+Detected\+Callback} (struct WPIWfi\+Status wfi\+Status, void \texorpdfstring{$\ast$}{*}userdata)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Main controller for the smartdoor\+F455 application lifecycle. 
+
+The application wires together the camera authenticator, GPIO presence sensor, MQTT/\+Telegram messaging and LED matrix rendering into one coherent runtime. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classApplication_a1c1d679b9c7efc0c73a3825555d867c9}\label{classApplication_a1c1d679b9c7efc0c73a3825555d867c9} 
+\index{Application@{Application}!handleAuthenticationResult@{handleAuthenticationResult}}
+\index{handleAuthenticationResult@{handleAuthenticationResult}!Application@{Application}}
+\doxysubsubsection{\texorpdfstring{handleAuthenticationResult()}{handleAuthenticationResult()}}
+{\footnotesize\ttfamily void Application\+::handle\+Authentication\+Result (\begin{DoxyParamCaption}\item[{const Real\+Sense\+ID\+::\+Authenticate\+Status}]{status,  }\item[{const char \texorpdfstring{$\ast$}{*}}]{user\+Id }\end{DoxyParamCaption})}
+
+
+
+Handle the result of an authentication attempt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em status} & Authentication result code. \\
+\hline
+{\em user\+Id} & User identifier returned by the camera. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classApplication_af96bf679985f69a10ece38ba342f3d77}\label{classApplication_af96bf679985f69a10ece38ba342f3d77} 
+\index{Application@{Application}!initialize@{initialize}}
+\index{initialize@{initialize}!Application@{Application}}
+\doxysubsubsection{\texorpdfstring{initialize()}{initialize()}}
+{\footnotesize\ttfamily bool Application\+::initialize (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{config\+Path }\end{DoxyParamCaption})}
+
+
+
+Initialize all subsystems from a TOML configuration file. 
+
+Initialize the application from a TOML configuration file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em config\+Path} & Path to the configuration file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when initialization completed successfully, false otherwise.
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em config\+Path} & Path to the configuration file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true when all subsystems could be initialized. 
+\end{DoxyReturn}
+\Hypertarget{classApplication_a8ae452496afaf54e57470314f44cac3f}\label{classApplication_a8ae452496afaf54e57470314f44cac3f} 
+\index{Application@{Application}!onPresenceDetected@{onPresenceDetected}}
+\index{onPresenceDetected@{onPresenceDetected}!Application@{Application}}
+\doxysubsubsection{\texorpdfstring{onPresenceDetected()}{onPresenceDetected()}}
+{\footnotesize\ttfamily void Application\+::on\+Presence\+Detected (\begin{DoxyParamCaption}\item[{const WPIWfi\+Status \&}]{wfi\+Status }\end{DoxyParamCaption})}
+
+
+
+React to a presence event from the sensor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em wfi\+Status} & Wiring\+Pi status information for the event. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classApplication_a8cf8941c8db90117d3735bce5ae1fdf4}\label{classApplication_a8cf8941c8db90117d3735bce5ae1fdf4} 
+\index{Application@{Application}!run@{run}}
+\index{run@{run}!Application@{Application}}
+\doxysubsubsection{\texorpdfstring{run()}{run()}}
+{\footnotesize\ttfamily int Application\+::run (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Run the application event loop until interrupted. 
+
+Enter the main event loop and wait for shutdown.
+
+\begin{DoxyReturn}{Returns}
+Exit status for the process.
+
+Exit code for the process. 
+\end{DoxyReturn}
+\Hypertarget{classApplication_a75d566d8af5b8cef037da979d66cadfa}\label{classApplication_a75d566d8af5b8cef037da979d66cadfa} 
+\index{Application@{Application}!sendTelegramText@{sendTelegramText}}
+\index{sendTelegramText@{sendTelegramText}!Application@{Application}}
+\doxysubsubsection{\texorpdfstring{sendTelegramText()}{sendTelegramText()}}
+{\footnotesize\ttfamily void Application\+::send\+Telegram\+Text (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message }\end{DoxyParamCaption})}
+
+
+
+Send a text message through Telegram when enabled. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & Message body to send. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{application_8hpp}{application.\+hpp}}\item 
+src/\mbox{\hyperlink{application_8cpp}{application.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,105 @@
+\doxysection{Enroll\+Callback Class Reference}
+\hypertarget{classEnrollCallback}{}\label{classEnrollCallback}\index{EnrollCallback@{EnrollCallback}}
+
+
+Callback bridge for enrollment events emitted by the Real\+Sense ID SDK.  
+
+
+
+
+{\ttfamily \#include $<$application.\+hpp$>$}
+
+
+
+Inheritance diagram for Enroll\+Callback\+:
+% FIG 0
+
+
+Collaboration diagram for Enroll\+Callback\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classEnrollCallback_a64d67638f0659ac85362257a26adb7b3}{Enroll\+Callback}} (\mbox{\hyperlink{classApplication}{Application}} \&application)
+\begin{DoxyCompactList}\small\item\em Construct an enrollment callback that forwards events to the application. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classEnrollCallback_ac60f12e6bf4917e94f1008ae1d9fb258}{On\+Result}} (const Real\+Sense\+ID\+::\+Enroll\+Status status) override
+\begin{DoxyCompactList}\small\item\em Handle the final enrollment result. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classEnrollCallback_a84aca96d4a45f0c2aab437227d1961a1}{On\+Progress}} (const Real\+Sense\+ID\+::\+Face\+Pose pose) override
+\begin{DoxyCompactList}\small\item\em Handle progress updates during enrollment. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classEnrollCallback_ac917a698890ceafb0fa48322e7974ec0}{On\+Hint}} (const Real\+Sense\+ID\+::\+Enroll\+Status hint) override
+\begin{DoxyCompactList}\small\item\em Handle enrollment hints provided by the SDK. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Callback bridge for enrollment events emitted by the Real\+Sense ID SDK. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classEnrollCallback_a64d67638f0659ac85362257a26adb7b3}\label{classEnrollCallback_a64d67638f0659ac85362257a26adb7b3} 
+\index{EnrollCallback@{EnrollCallback}!EnrollCallback@{EnrollCallback}}
+\index{EnrollCallback@{EnrollCallback}!EnrollCallback@{EnrollCallback}}
+\doxysubsubsection{\texorpdfstring{EnrollCallback()}{EnrollCallback()}}
+{\footnotesize\ttfamily Enroll\+Callback\+::\+Enroll\+Callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classApplication}{Application}} \&}]{application }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Construct an enrollment callback that forwards events to the application. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em application} & Parent application instance. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classEnrollCallback_ac917a698890ceafb0fa48322e7974ec0}\label{classEnrollCallback_ac917a698890ceafb0fa48322e7974ec0} 
+\index{EnrollCallback@{EnrollCallback}!OnHint@{OnHint}}
+\index{OnHint@{OnHint}!EnrollCallback@{EnrollCallback}}
+\doxysubsubsection{\texorpdfstring{OnHint()}{OnHint()}}
+{\footnotesize\ttfamily void Enroll\+Callback\+::\+On\+Hint (\begin{DoxyParamCaption}\item[{const Real\+Sense\+ID\+::\+Enroll\+Status}]{hint }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Handle enrollment hints provided by the SDK. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hint} & Hint code returned during enrollment. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classEnrollCallback_a84aca96d4a45f0c2aab437227d1961a1}\label{classEnrollCallback_a84aca96d4a45f0c2aab437227d1961a1} 
+\index{EnrollCallback@{EnrollCallback}!OnProgress@{OnProgress}}
+\index{OnProgress@{OnProgress}!EnrollCallback@{EnrollCallback}}
+\doxysubsubsection{\texorpdfstring{OnProgress()}{OnProgress()}}
+{\footnotesize\ttfamily void Enroll\+Callback\+::\+On\+Progress (\begin{DoxyParamCaption}\item[{const Real\+Sense\+ID\+::\+Face\+Pose}]{pose }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Handle progress updates during enrollment. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pose} & Current face pose reported by the SDK. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classEnrollCallback_ac60f12e6bf4917e94f1008ae1d9fb258}\label{classEnrollCallback_ac60f12e6bf4917e94f1008ae1d9fb258} 
+\index{EnrollCallback@{EnrollCallback}!OnResult@{OnResult}}
+\index{OnResult@{OnResult}!EnrollCallback@{EnrollCallback}}
+\doxysubsubsection{\texorpdfstring{OnResult()}{OnResult()}}
+{\footnotesize\ttfamily void Enroll\+Callback\+::\+On\+Result (\begin{DoxyParamCaption}\item[{const Real\+Sense\+ID\+::\+Enroll\+Status}]{status }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Handle the final enrollment result. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em status} & Result of the enrollment workflow. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{application_8hpp}{application.\+hpp}}\item 
+src/\mbox{\hyperlink{application_8cpp}{application.\+cpp}}\end{DoxyCompactItemize}

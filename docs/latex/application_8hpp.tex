@@ -1,0 +1,46 @@
+\doxysection{src/application.hpp File Reference}
+\hypertarget{application_8hpp}{}\label{application_8hpp}\index{src/application.hpp@{src/application.hpp}}
+
+
+Main application controller for the smartdoor\+F455 door-\/opener.  
+
+
+{\ttfamily \#include $<$atomic$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$mutex$>$}\newline
+{\ttfamily \#include $<$optional$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include "{}config.\+hpp"{}}\newline
+{\ttfamily \#include "{}matrix\+\_\+display.\+hpp"{}}\newline
+{\ttfamily \#include "{}Real\+Sense\+ID/\+Discover\+Devices.\+h"{}}\newline
+{\ttfamily \#include "{}Real\+Sense\+ID/\+Face\+Authenticator.\+h"{}}\newline
+{\ttfamily \#include $<$mosquitto.\+h$>$}\newline
+{\ttfamily \#include $<$opencv2/opencv.\+hpp$>$}\newline
+{\ttfamily \#include $<$tgbot/tgbot.\+h$>$}\newline
+{\ttfamily \#include $<$wiring\+Pi.\+h$>$}\newline
+Include dependency graph for application.\+hpp\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classAuthCallback}{Auth\+Callback}}
+\begin{DoxyCompactList}\small\item\em Callback bridge for authentication events emitted by the Real\+Sense ID SDK. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classEnrollCallback}{Enroll\+Callback}}
+\begin{DoxyCompactList}\small\item\em Callback bridge for enrollment events emitted by the Real\+Sense ID SDK. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classApplication}{Application}}
+\begin{DoxyCompactList}\small\item\em Main controller for the smartdoor\+F455 application lifecycle. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{application_8hpp_ae61f830ad552b86fed95f9484968b77e}\label{application_8hpp_ae61f830ad552b86fed95f9484968b77e} 
+void {\bfseries presence\+Detected\+Callback} (struct WPIWfi\+Status wfi\+Status, void \texorpdfstring{$\ast$}{*}userdata)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Main application controller for the smartdoor\+F455 door-\/opener. 
+
+This header defines the orchestration layer that initializes the camera, GPIO sensor, optional MQTT/\+Telegram integrations and the LED matrix display. 

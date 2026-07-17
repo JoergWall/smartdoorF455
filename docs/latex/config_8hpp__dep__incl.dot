@@ -1,0 +1,19 @@
+digraph "src/config.hpp"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  Node1 [id="Node000001",label="src/config.hpp",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Configuration loader for smartdoorF455."];
+  Node1 -> Node2 [id="edge7_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="src/application.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$application_8hpp.html",tooltip="Main application controller for the smartdoorF455 door-opener."];
+  Node2 -> Node3 [id="edge8_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="src/application.cpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$application_8cpp.html",tooltip="Runtime implementation for the smartdoorF455 application controller."];
+  Node1 -> Node4 [id="edge9_Node000001_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="src/config.cpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$config_8cpp.html",tooltip="Implementation of the configuration loader and typed accessors."];
+  Node1 -> Node5 [id="edge10_Node000001_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="src/matrix_display.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$matrix__display_8hpp.html",tooltip="Wrapper around the RGB LED matrix display."];
+  Node5 -> Node2 [id="edge11_Node000005_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 -> Node6 [id="edge12_Node000005_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="src/matrix_display.cpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$matrix__display_8cpp.html",tooltip="RGB matrix rendering and lifecycle implementation."];
+}

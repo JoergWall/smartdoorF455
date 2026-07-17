@@ -1,0 +1,52 @@
+\doxysection{config.\+hpp}
+\hypertarget{config_8hpp_source}{}\label{config_8hpp_source}\index{src/config.hpp@{src/config.hpp}}
+\mbox{\hyperlink{config_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ "{}RealSenseID/DeviceConfig.h"{}}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ "{}toml++/toml.hpp"{}}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classConfig}{Config}}}
+\DoxyCodeLine{00024\ \{}
+\DoxyCodeLine{00025\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classConfig_a1fea39f91ca945e3e75602b33abcdd79}{loadFile}}(\textcolor{keyword}{const}\ std::string\&\ path,\ std::string\&\ error);}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classConfig_a91e84fa0b0764fcf2af2f57d716f26d9}{has}}(\textcolor{keyword}{const}\ std::string\&\ dottedPath)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classConfig_acd2f291bc350e3441d69ac99dfa5a1da}{getBool}}(\textcolor{keyword}{const}\ std::string\&\ dottedPath,\ \textcolor{keywordtype}{bool}\ defaultValue)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classConfig_a76707889b4187f790f0a5d9594ae60a5}{getInt}}(\textcolor{keyword}{const}\ std::string\&\ dottedPath,\ \textcolor{keywordtype}{int}\ defaultValue)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{long}\ \mbox{\hyperlink{classConfig_a446a5504b8ffac41563d29540a39c726}{getLong}}(\textcolor{keyword}{const}\ std::string\&\ dottedPath,\ \textcolor{keywordtype}{long}\ defaultValue)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00059\ \ \ \ \ std::string\ \mbox{\hyperlink{classConfig_a36b095297aa5c04cb2dce46b74eabe42}{getString}}(\textcolor{keyword}{const}\ std::string\&\ dottedPath,\ \textcolor{keyword}{const}\ std::string\&\ defaultValue)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00064\ \ \ \ \ std::array<uint8\_t,\ 3>\ \mbox{\hyperlink{classConfig_a63d9bbac9574fceab516f7db6ac78602}{getColor}}(\textcolor{keyword}{const}\ std::string\&\ dottedPath,\ \textcolor{keyword}{const}\ std::array<uint8\_t,\ 3>\&\ defaultValue)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00069\ \ \ \ \ std::vector<int>\ \mbox{\hyperlink{classConfig_a5d97914350e2a8fb0f4239e4a3c199f0}{getIntArray}}(\textcolor{keyword}{const}\ std::string\&\ dottedPath,\ \textcolor{keyword}{const}\ std::vector<int>\&\ defaultValue)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00075\ \ \ \ \ RealSenseID::DeviceConfig\ \mbox{\hyperlink{classConfig_ae09d0891a1c5adfa07bfed3ea80b1a19}{getDeviceConfig}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{const}\ toml::table\&\ \mbox{\hyperlink{classConfig_a9d28f0953732334578ca89aee95ab64a}{table}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00084\ \ \ \ \ std::optional<toml::node\_view<const\ toml::node>>\ findNode(\textcolor{keyword}{const}\ std::string\&\ dottedPath)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ toml::table\ config\_;}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<std::string,\ RealSenseID::DeviceConfig::CameraRotation>\ s\_cameraRotationMap;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<std::string,\ RealSenseID::DeviceConfig::SecurityLevel>\ s\_securityLevelMap;}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<std::string,\ RealSenseID::DeviceConfig::AlgoFlow>\ s\_algoFlowMap;}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<std::string,\ RealSenseID::DeviceConfig::DumpMode>\ s\_dumpModeMap;}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<std::string,\ RealSenseID::DeviceConfig::MatcherConfidenceLevel>\ s\_matcherConfidenceMap;}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<std::string,\ RealSenseID::DeviceConfig::FrontalFacePolicy>\ s\_frontalFacePolicyMap;}
+\DoxyCodeLine{00094\ \};}
+
+\end{DoxyCode}

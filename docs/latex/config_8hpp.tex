@@ -1,0 +1,29 @@
+\doxysection{src/config.hpp File Reference}
+\hypertarget{config_8hpp}{}\label{config_8hpp}\index{src/config.hpp@{src/config.hpp}}
+
+
+Configuration loader for smartdoor\+F455.  
+
+
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$optional$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$unordered\+\_\+map$>$}\newline
+{\ttfamily \#include "{}Real\+Sense\+ID/\+Device\+Config.\+h"{}}\newline
+{\ttfamily \#include "{}toml++/toml.\+hpp"{}}\newline
+Include dependency graph for config.\+hpp\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classConfig}{Config}}
+\begin{DoxyCompactList}\small\item\em Typed access to TOML configuration values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Configuration loader for smartdoor\+F455. 
+
+The \doxylink{classConfig}{Config} class exposes helpers for reading typed values from a TOML file, including camera settings and display options. 

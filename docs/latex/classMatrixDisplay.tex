@@ -1,0 +1,75 @@
+\doxysection{Matrix\+Display Class Reference}
+\hypertarget{classMatrixDisplay}{}\label{classMatrixDisplay}\index{MatrixDisplay@{MatrixDisplay}}
+
+
+Render time and authentication state on an RGB LED matrix.  
+
+
+
+
+{\ttfamily \#include $<$matrix\+\_\+display.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classMatrixDisplay_a198a967c9366b88e8471ac8dc8063ea5}\label{classMatrixDisplay_a198a967c9366b88e8471ac8dc8063ea5} 
+using {\bfseries Name\+Provider} = std\+::function$<$ std\+::string()$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classMatrixDisplay_a33f2d11739666937ca570e8b5304a934}{Matrix\+Display}} (const \mbox{\hyperlink{classConfig}{Config}} \&config, Name\+Provider name\+Provider)
+\begin{DoxyCompactList}\small\item\em Construct a matrix display renderer. \end{DoxyCompactList}\item 
+\Hypertarget{classMatrixDisplay_add9d4a2fd728a48f818ec45352ecd3cc}\label{classMatrixDisplay_add9d4a2fd728a48f818ec45352ecd3cc} 
+{\bfseries \texorpdfstring{$\sim$}{\string~}\+Matrix\+Display} ()
+\begin{DoxyCompactList}\small\item\em Destroy the display renderer and release the matrix resources. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classMatrixDisplay_ad10c98754ec669e913e0fe54358e03c2}{start}} ()
+\begin{DoxyCompactList}\small\item\em Start the display loop and initialize the matrix. \end{DoxyCompactList}\item 
+\Hypertarget{classMatrixDisplay_a84b5ed09d90f21a6d16e71c7a016df90}\label{classMatrixDisplay_a84b5ed09d90f21a6d16e71c7a016df90} 
+void {\bfseries stop} ()
+\begin{DoxyCompactList}\small\item\em Stop the display loop and release the matrix. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Render time and authentication state on an RGB LED matrix. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classMatrixDisplay_a33f2d11739666937ca570e8b5304a934}\label{classMatrixDisplay_a33f2d11739666937ca570e8b5304a934} 
+\index{MatrixDisplay@{MatrixDisplay}!MatrixDisplay@{MatrixDisplay}}
+\index{MatrixDisplay@{MatrixDisplay}!MatrixDisplay@{MatrixDisplay}}
+\doxysubsubsection{\texorpdfstring{MatrixDisplay()}{MatrixDisplay()}}
+{\footnotesize\ttfamily Matrix\+Display\+::\+Matrix\+Display (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classConfig}{Config}} \&}]{config,  }\item[{Name\+Provider}]{name\+Provider }\end{DoxyParamCaption})}
+
+
+
+Construct a matrix display renderer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em config} & Configuration values for colors, mapping and timing. \\
+\hline
+{\em name\+Provider} & Callback used to obtain the currently authenticated user. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classMatrixDisplay_ad10c98754ec669e913e0fe54358e03c2}\label{classMatrixDisplay_ad10c98754ec669e913e0fe54358e03c2} 
+\index{MatrixDisplay@{MatrixDisplay}!start@{start}}
+\index{start@{start}!MatrixDisplay@{MatrixDisplay}}
+\doxysubsubsection{\texorpdfstring{start()}{start()}}
+{\footnotesize\ttfamily bool Matrix\+Display\+::start (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Start the display loop and initialize the matrix. 
+
+\begin{DoxyReturn}{Returns}
+true when the display is ready or when startup has safely degraded to headless mode. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{matrix__display_8hpp}{matrix\+\_\+display.\+hpp}}\item 
+src/\mbox{\hyperlink{matrix__display_8cpp}{matrix\+\_\+display.\+cpp}}\end{DoxyCompactItemize}
