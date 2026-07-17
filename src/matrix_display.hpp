@@ -68,10 +68,8 @@ private:
     rgb_matrix::Color bgColor_{};
     rgb_matrix::Color outlineColor_{};
 
-    rgb_matrix::Font fontTime_;
-    rgb_matrix::Font fontDate_;
-    rgb_matrix::Font fontDay_;
-    rgb_matrix::Font fontName_;
+    rgb_matrix::Font font6x12_; // shared by clock, date and username lines
+    rgb_matrix::Font font4x6_;  // weekday line
 
     rgb_matrix::RGBMatrix::Options matrixOptions_{};
     rgb_matrix::RuntimeOptions runtimeOptions_{};

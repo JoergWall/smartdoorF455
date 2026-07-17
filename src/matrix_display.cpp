@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace {
-std::string resolveFontPath(const std::string& fontFile)
+std::string resolveFontPath(const std::string& fontFile, const std::string& fontDir)
 {
     std::vector<std::filesystem::path> candidates;
 
@@ -22,6 +22,11 @@ std::string resolveFontPath(const std::string& fontFile)
             candidates.push_back(path);
         }
     };
+
+    // Configured font directory takes precedence when provided.
+    if (!fontDir.empty()) {
+        addCandidate(std::filesystem::path(fontDir) / fontFile);
+    }
 
     std::error_code ec;
     const std::filesystem::path cwd = std::filesystem::current_path(ec);
@@ -45,16 +50,6 @@ std::string resolveFontPath(const std::string& fontFile)
         addCandidate(exeDir / ".." / "build" / "external" / "rpi-rgb-led-matrix-src" / "fonts" / fontFile);
         addCandidate(exeDir / ".." / ".." / "build" / "external" / "rpi-rgb-led-matrix-src" / "fonts" / fontFile);
         addCandidate(exeDir / ".." / ".." / "external" / "rpi-rgb-led-matrix-src" / "fonts" / fontFile);
-    }
-
-    const std::vector<std::filesystem::path> absoluteFallbacks = {
-        std::filesystem::path("/home/joerg/rpi-rgb-led-matrix/fonts") / fontFile,
-        std::filesystem::path("/home/joerg/smartdoorF455-1/build/external/rpi-rgb-led-matrix-src/fonts") / fontFile,
-        std::filesystem::path("/home/joerg/smartdoorF455-1/external/rpi-rgb-led-matrix-src/fonts") / fontFile,
-        std::filesystem::path("/home/joerg/smartdoorF455-1/bin/fonts") / fontFile,
-    };
-    for (const auto& fallback : absoluteFallbacks) {
-        addCandidate(fallback);
     }
 
     for (const auto& candidate : candidates) {
@@ -81,16 +76,13 @@ MatrixDisplay::~MatrixDisplay()
 
 bool MatrixDisplay::loadFonts()
 {
-    const std::string fontTimePath = resolveFontPath("6x12.bdf");
-    const std::string fontDayPath = resolveFontPath("4x6.bdf");
-    const std::string fontDatePath = resolveFontPath("6x12.bdf");
-    const std::string fontNamePath = resolveFontPath("6x12.bdf");
+    const std::string fontDir = config_.getString("matrix_options.font_dir", "");
+    const std::string path6x12 = resolveFontPath("6x12.bdf", fontDir);
+    const std::string path4x6 = resolveFontPath("4x6.bdf", fontDir);
 
-    const bool ok = !fontTimePath.empty() && !fontDayPath.empty() && !fontDatePath.empty() && !fontNamePath.empty() &&
-        fontTime_.LoadFont(fontTimePath.c_str()) &&
-        fontDate_.LoadFont(fontDatePath.c_str()) &&
-        fontDay_.LoadFont(fontDayPath.c_str()) &&
-        fontName_.LoadFont(fontNamePath.c_str());
+    const bool ok = !path6x12.empty() && !path4x6.empty() &&
+        font6x12_.LoadFont(path6x12.c_str()) &&
+        font4x6_.LoadFont(path4x6.c_str());
 
     if (!ok) {
         std::cerr << "Warning: failed to load matrix fonts; continuing without LED display" << std::endl;
@@ -121,13 +113,13 @@ void MatrixDisplay::render()
 #endif
 
     offscreen_->Fill(bgColor_.r, bgColor_.g, bgColor_.b);
-    rgb_matrix::DrawText(offscreen_, fontTime_, 0, 7, clockColor_, nullptr, formatTime(timeinfo, "%H:%M").c_str(), 0);
-    rgb_matrix::DrawText(offscreen_, fontDay_, 0, 13, dayColor_, nullptr, formatTime(timeinfo, "%A").c_str(), 0);
-    rgb_matrix::DrawText(offscreen_, fontDate_, 0, 21, dateColor_, nullptr, formatTime(timeinfo, "%d.%m").c_str(), 0);
+    rgb_matrix::DrawText(offscreen_, font6x12_, 0, 7, clockColor_, nullptr, formatTime(timeinfo, "%H:%M").c_str(), 0);
+    rgb_matrix::DrawText(offscreen_, font4x6_, 0, 13, dayColor_, nullptr, formatTime(timeinfo, "%A").c_str(), 0);
+    rgb_matrix::DrawText(offscreen_, font6x12_, 0, 21, dateColor_, nullptr, formatTime(timeinfo, "%d.%m").c_str(), 0);
 
     const std::string userName = nameProvider_();
     if (!userName.empty()) {
-        rgb_matrix::DrawText(offscreen_, fontName_, 0, 29, usernameColor_, nullptr, userName.c_str(), 0);
+        rgb_matrix::DrawText(offscreen_, font6x12_, 0, 29, usernameColor_, nullptr, userName.c_str(), 0);
     }
 
     offscreen_ = matrix_->SwapOnVSync(offscreen_);

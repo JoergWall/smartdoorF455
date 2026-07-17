@@ -9,10 +9,15 @@
  */
 
 #include <atomic>
+#include <condition_variable>
+#include <cstddef>
+#include <deque>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "config.hpp"
@@ -57,40 +62,6 @@ public:
      * @param ts Timestamp of the detection event.
      */
     void OnFaceDetected(const std::vector<RealSenseID::FaceRect>& faces, const unsigned int ts) override;
-
-private:
-    Application& application_;
-};
-
-/**
- * @brief Callback bridge for enrollment events emitted by the RealSense ID SDK.
- */
-class EnrollCallback : public RealSenseID::EnrollmentCallback
-{
-public:
-    /**
-     * @brief Construct an enrollment callback that forwards events to the application.
-     * @param application Parent application instance.
-     */
-    explicit EnrollCallback(Application& application);
-
-    /**
-     * @brief Handle the final enrollment result.
-     * @param status Result of the enrollment workflow.
-     */
-    void OnResult(const RealSenseID::EnrollStatus status) override;
-
-    /**
-     * @brief Handle progress updates during enrollment.
-     * @param pose Current face pose reported by the SDK.
-     */
-    void OnProgress(const RealSenseID::FacePose pose) override;
-
-    /**
-     * @brief Handle enrollment hints provided by the SDK.
-     * @param hint Hint code returned during enrollment.
-     */
-    void OnHint(const RealSenseID::EnrollStatus hint) override;
 
 private:
     Application& application_;
@@ -155,6 +126,8 @@ private:
     void cleanup();
     void publishDoorOpen();
     void takeSnapshotAndSend();
+    void enqueueNotification(std::function<void()> task);
+    void notificationWorkerLoop();
     std::string getLastAuthenticatedName() const;
     void setLastAuthenticatedName(const std::string& name);
     std::string getHomeDirectory() const;
@@ -167,11 +140,13 @@ private:
     std::string serialPort_;
 
     std::unique_ptr<MatrixDisplay> matrixDisplay_;
+    // Declared before bot_ so it outlives the Bot, which keeps a reference to it.
+    std::unique_ptr<TgBot::BoostHttpOnlySslClient> httpClient_;
     std::unique_ptr<TgBot::Bot> bot_;
 
     std::atomic<bool> interruptRequested_{false};
     mutable std::mutex lastAuthenticatedNameMutex_;
-    std::string lastAuthenticatedName_;
+    mutable std::string lastAuthenticatedName_;
     std::chrono::steady_clock::time_point nameSetTime_ = std::chrono::steady_clock::now();
     static constexpr int NAME_DISPLAY_TIMEOUT_SEC = 5; // Display authenticated name for 5 seconds
     bool firstPresence_{true};
@@ -187,12 +162,23 @@ private:
     std::string topicControl_;
     struct mosquitto* mosq_ = nullptr;
 
+    // Background worker that runs Telegram/snapshot I/O off the GPIO interrupt thread,
+    // so a slow or hanging network send never delays presence handling / reauthentication.
+    std::thread notificationThread_;
+    std::mutex notificationMutex_;
+    std::condition_variable notificationCv_;
+    std::deque<std::function<void()>> notificationQueue_;
+    bool notificationStop_ = false;
+    static constexpr std::size_t MAX_PENDING_NOTIFICATIONS = 8;
+    static constexpr int TELEGRAM_TIMEOUT_SEC = 10;
+
     int gpioSensorPin_ = 0;
     int gpioSensorPull_ = 0;
     int waitTimeUntilReauth_ = 3;
 
     AuthCallback authCallback_;
-    EnrollCallback enrollCallback_;
+
+    bool cleanedUp_ = false;
 
     static Application* instance_;
     static void signalHandler(int signum);

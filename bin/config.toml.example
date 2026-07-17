@@ -33,6 +33,8 @@ max_spoofs = 0 # integer value: Specifies the maximum number of consecutive spoo
 gpio_auth_toggling = 0 # integer value: Controls whether GPIO toggling is enabled(1) or disabled(0, default) after successful authentication.
 
 [matrix_options] # options for LED matrix display
+# font_dir = "" # optional: absolute path to the directory containing 6x12.bdf and 4x6.bdf.
+                # When empty, fonts are searched relative to the working directory and the executable.
 hardware_mapping = "" # string value: "adafruit-hat" or "" empty string. Specifies, how LED matrix display is connected to Raspberry gpio_sensor_pin
 brightness = 80 # integer value for brightness in percent from 0..100
 pixel_mapper_config = "Rotate:270" # string values: "Rotate:0", "Rotate:90", "Rotate:180", "Rotate:270"

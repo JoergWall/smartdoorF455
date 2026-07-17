@@ -17,7 +17,7 @@
 Application* Application::instance_ = nullptr;
 
 Application::Application()
-    : authCallback_(*this), enrollCallback_(*this)
+    : authCallback_(*this)
 {
     instance_ = this;
 }
@@ -73,6 +73,9 @@ bool Application::initialize(const std::string& configPath)
         return false;
     }
 
+    // Start the notification worker so Telegram/snapshot I/O runs off the interrupt thread.
+    notificationThread_ = std::thread([this]() { notificationWorkerLoop(); });
+
     return true;
 }
 
@@ -85,13 +88,11 @@ int Application::run()
     signal(SIGTERM, signalHandler);
     signal(SIGINT, signalHandler);
 
-    std::mutex mutex;
-    std::unique_lock<std::mutex> lock(mutex);
-
     while (!interruptRequested_.load(std::memory_order_acquire)) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
+    std::cout << "Interrupt received, shutting down." << std::endl;
     cleanup();
     return 0;
 }
@@ -101,6 +102,21 @@ int Application::run()
  */
 void Application::cleanup()
 {
+    if (cleanedUp_) {
+        return;
+    }
+    cleanedUp_ = true;
+
+    // Stop the notification worker before tearing down bot_/other resources it uses.
+    {
+        std::lock_guard<std::mutex> lock(notificationMutex_);
+        notificationStop_ = true;
+    }
+    notificationCv_.notify_all();
+    if (notificationThread_.joinable()) {
+        notificationThread_.join();
+    }
+
     if (matrixDisplay_) {
         matrixDisplay_->stop();
     }
@@ -211,7 +227,12 @@ bool Application::initTelegram()
         return false;
     }
 
-    bot_ = std::make_unique<TgBot::Bot>(botToken_);
+    // Own an HTTP client with a bounded timeout so a stalled connection cannot hang the
+    // notification worker indefinitely. It must outlive bot_, which keeps a reference to it.
+    httpClient_ = std::make_unique<TgBot::BoostHttpOnlySslClient>();
+    httpClient_->_timeout = TELEGRAM_TIMEOUT_SEC;
+
+    bot_ = std::make_unique<TgBot::Bot>(botToken_, *httpClient_);
     try {
         bot_->getApi().sendMessage(chatId_, "smartdoorF455 started ...");
     } catch (const TgBot::TgException& e) {
@@ -246,10 +267,11 @@ void Application::onPresenceDetected(const WPIWfiStatus& wfiStatus)
     }
 
     authenticator_->Authenticate(authCallback_);
-    authenticationInProgress_.store(false, std::memory_order_release);
     if (sendSnapshot_ && useTelegram_) {
-        takeSnapshotAndSend();
+        // Offload the snapshot + Telegram upload so it never delays reauthentication.
+        enqueueNotification([this]() { takeSnapshotAndSend(); });
     }
+    authenticationInProgress_.store(false, std::memory_order_release);
 }
 
 void Application::handleAuthenticationResult(const RealSenseID::AuthenticateStatus status, const char* userId)
@@ -260,11 +282,14 @@ void Application::handleAuthenticationResult(const RealSenseID::AuthenticateStat
             publishDoorOpen();
         }
         if (useTelegram_) {
-            sendTelegramText("Door opened for " + std::string(userId ? userId : "unknown"));
+            const std::string message = "Door opened for " + std::string(userId ? userId : "unknown");
+            enqueueNotification([this, message]() { sendTelegramText(message); });
         }
     } else {
         if (useTelegram_) {
-            sendTelegramText("RealSenseID::AuthenticateStatus: unauthorized person tried to access");
+            enqueueNotification([this]() {
+                sendTelegramText("RealSenseID::AuthenticateStatus: unauthorized person tried to access");
+            });
         }
     }
 }
@@ -328,6 +353,44 @@ void Application::takeSnapshotAndSend()
     }
 }
 
+void Application::enqueueNotification(std::function<void()> task)
+{
+    {
+        std::lock_guard<std::mutex> lock(notificationMutex_);
+        if (notificationStop_) {
+            return;
+        }
+        // Bound the backlog: if the network is stalling, drop the oldest pending task
+        // rather than let work pile up unbounded.
+        if (notificationQueue_.size() >= MAX_PENDING_NOTIFICATIONS) {
+            notificationQueue_.pop_front();
+            std::cerr << "Notification queue full; dropping oldest pending task" << std::endl;
+        }
+        notificationQueue_.push_back(std::move(task));
+    }
+    notificationCv_.notify_one();
+}
+
+void Application::notificationWorkerLoop()
+{
+    for (;;) {
+        std::function<void()> task;
+        {
+            std::unique_lock<std::mutex> lock(notificationMutex_);
+            notificationCv_.wait(lock, [this]() {
+                return notificationStop_ || !notificationQueue_.empty();
+            });
+            if (notificationStop_ && notificationQueue_.empty()) {
+                return;
+            }
+            task = std::move(notificationQueue_.front());
+            notificationQueue_.pop_front();
+        }
+        // Executed off the interrupt thread; blocking network/camera work is safe here.
+        task();
+    }
+}
+
 std::string Application::getLastAuthenticatedName() const
 {
     std::lock_guard<std::mutex> lock(lastAuthenticatedNameMutex_);
@@ -338,7 +401,7 @@ std::string Application::getLastAuthenticatedName() const
     
     if (!lastAuthenticatedName_.empty() && elapsed.count() >= NAME_DISPLAY_TIMEOUT_SEC) {
         // Clear the name after timeout
-        const_cast<Application*>(this)->lastAuthenticatedName_.clear();
+        lastAuthenticatedName_.clear();
         return "";
     }
     
@@ -365,10 +428,11 @@ std::string Application::getSnapshotDirectory() const
 
 void Application::signalHandler(int signum)
 {
+    // Async-signal-safe: only touch the atomic flag; no I/O or allocation here.
+    (void)signum;
     if (instance_) {
         instance_->interruptRequested_.store(true, std::memory_order_release);
     }
-    std::cout << "Interrupt signal (" << signum << ") received." << std::endl;
 }
 
 void presenceDetectedCallback(struct WPIWfiStatus wfiStatus, void* userdata)
@@ -398,24 +462,4 @@ void AuthCallback::OnFaceDetected(const std::vector<RealSenseID::FaceRect>& face
     for (const auto& face : faces) {
         std::cout << "Detected face " << face.x << "," << face.y << " " << face.w << "x" << face.h << " (timestamp " << ts << ")" << std::endl;
     }
-}
-
-EnrollCallback::EnrollCallback(Application& application)
-    : application_(application)
-{
-}
-
-void EnrollCallback::OnResult(const RealSenseID::EnrollStatus status)
-{
-    std::cout << "Enrollment result: " << static_cast<int>(status) << std::endl;
-}
-
-void EnrollCallback::OnProgress(const RealSenseID::FacePose pose)
-{
-    std::cout << "Enroll progress pose: " << static_cast<int>(pose) << std::endl;
-}
-
-void EnrollCallback::OnHint(const RealSenseID::EnrollStatus hint)
-{
-    std::cout << "Enrollment hint: " << static_cast<int>(hint) << std::endl;
 }
