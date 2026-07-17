@@ -59,7 +59,7 @@ private:
     const Config& config_;
     NameProvider nameProvider_;
     std::atomic<bool> running_{false};
-    PeriodicExecutor<> executor_;
+    PeriodicExecutor executor_;
 
     rgb_matrix::Color clockColor_{};
     rgb_matrix::Color dateColor_{};
