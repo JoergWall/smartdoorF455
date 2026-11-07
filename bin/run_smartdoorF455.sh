@@ -77,15 +77,36 @@ ensure_program_exists() {
     fi
 }
 
+# getcap/setcap live in /usr/sbin, which is not on PATH for non-login shells
+# (ssh commands, cron) — resolve them explicitly so the capability is not
+# silently skipped after a rebuild.
+find_cap_tool() {
+    local tool="$1"
+    if command -v "$tool" >/dev/null 2>&1; then
+        command -v "$tool"
+        return 0
+    fi
+    local candidate
+    for candidate in "/usr/sbin/$tool" "/sbin/$tool"; do
+        if [ -x "$candidate" ]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
 set_nice_capability() {
-    if ! command -v getcap >/dev/null 2>&1 || ! command -v setcap >/dev/null 2>&1; then
+    local getcap_bin setcap_bin
+    if ! getcap_bin=$(find_cap_tool getcap) || ! setcap_bin=$(find_cap_tool setcap); then
+        echo "Warning: getcap/setcap not found; cannot set cap_sys_nice" >&2
         return
     fi
 
-    if ! getcap "$PROG" 2>/dev/null | grep -q 'cap_sys_nice'; then
+    if ! "$getcap_bin" "$PROG" 2>/dev/null | grep -q 'cap_sys_nice'; then
         echo "Setting cap_sys_nice on $PROG (may require sudo)"
         if command -v sudo >/dev/null 2>&1; then
-            sudo setcap 'cap_sys_nice=eip' "$PROG" || echo "Warning: failed to set cap_sys_nice" >&2
+            sudo "$setcap_bin" 'cap_sys_nice=eip' "$PROG" || echo "Warning: failed to set cap_sys_nice" >&2
         else
             echo "Warning: sudo not available; skipping setcap" >&2
         fi

@@ -3,12 +3,23 @@
     "configurePresets": [
     {
     "name": "default",
-    "description": "Default settings for my make project",
+    "description": "Debug build for development",
     "hidden": false,
     "generator": "Unix Makefiles",
     "binaryDir": "${sourceDir}/build",
     "cacheVariables": {
            "CMAKE_BUILD_TYPE": "Debug",
+            "CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
+            }
+        },
+    {
+    "name": "release",
+    "description": "Optimized build with debug info for production use",
+    "hidden": false,
+    "generator": "Unix Makefiles",
+    "binaryDir": "${sourceDir}/build-release",
+    "cacheVariables": {
+           "CMAKE_BUILD_TYPE": "RelWithDebInfo",
             "CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
             }
         }

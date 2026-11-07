@@ -79,4 +79,6 @@ private:
     rgb_matrix::FrameCanvas* offscreen_ = nullptr;
     rgb_matrix::RGBMatrix* matrix_ = nullptr;
     int intervalMs_ = 100;
+    int lastRenderedMinute_ = -1;      // minute-of-day of the last drawn frame (-1 = nothing drawn yet)
+    std::string lastRenderedName_;     // user name shown in the last drawn frame
 };

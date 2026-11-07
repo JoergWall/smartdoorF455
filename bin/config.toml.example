@@ -37,6 +37,9 @@ gpio_auth_toggling = 0 # integer value: Controls whether GPIO toggling is enable
                 # When empty, fonts are searched relative to the working directory and the executable.
 hardware_mapping = "" # string value: "adafruit-hat" or "" empty string. Specifies, how LED matrix display is connected to Raspberry gpio_sensor_pin
 brightness = 80 # integer value for brightness in percent from 0..100
+limit_refresh_hz = 150 # integer value: cap the panel refresh rate in Hz (0 = unlimited).
+                       # Without a cap the refresh thread busy-loops and consumes a full CPU core;
+                       # 100..200 Hz is flicker-free and cuts CPU load substantially.
 pixel_mapper_config = "Rotate:270" # string values: "Rotate:0", "Rotate:90", "Rotate:180", "Rotate:270"
 clock_color = [255, 255, 0] # array of int with values from 0..255
 date_color = [255, 28, 0] 

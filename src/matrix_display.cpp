@@ -112,12 +112,22 @@ void MatrixDisplay::render()
     localtime_r(&in_time_t, &timeinfo);
 #endif
 
+    // The clock only shows HH:MM, so the frame content changes once per minute
+    // (a minute change also covers day/date rollover) or when the shown user
+    // name changes. Skip the redraw and swap otherwise.
+    const int minuteOfDay = timeinfo.tm_hour * 60 + timeinfo.tm_min;
+    const std::string userName = nameProvider_();
+    if (minuteOfDay == lastRenderedMinute_ && userName == lastRenderedName_) {
+        return;
+    }
+    lastRenderedMinute_ = minuteOfDay;
+    lastRenderedName_ = userName;
+
     offscreen_->Fill(bgColor_.r, bgColor_.g, bgColor_.b);
     rgb_matrix::DrawText(offscreen_, font6x12_, 0, 7, clockColor_, nullptr, formatTime(timeinfo, "%H:%M").c_str(), 0);
     rgb_matrix::DrawText(offscreen_, font4x6_, 0, 13, dayColor_, nullptr, formatTime(timeinfo, "%A").c_str(), 0);
     rgb_matrix::DrawText(offscreen_, font6x12_, 0, 21, dateColor_, nullptr, formatTime(timeinfo, "%d.%m").c_str(), 0);
 
-    const std::string userName = nameProvider_();
     if (!userName.empty()) {
         rgb_matrix::DrawText(offscreen_, font6x12_, 0, 29, usernameColor_, nullptr, userName.c_str(), 0);
     }
@@ -156,6 +166,13 @@ bool MatrixDisplay::start()
     matrixOptions_.rows = 32;
     matrixOptions_.cols = 64;
     matrixOptions_.brightness = config_.getInt("matrix_options.brightness", 80);
+    // 0 keeps the library's unthrottled busy-loop refresh; a cap (e.g. 150 Hz)
+    // lets the refresh thread sleep between frames and cuts its CPU load.
+    // Without disable_busy_waiting the library pads each frame with a busy-wait,
+    // which costs MORE CPU than no limit at all; sleeping is precise enough for
+    // a clock display, so it is switched on together with the cap.
+    matrixOptions_.limit_refresh_rate_hz = config_.getInt("matrix_options.limit_refresh_hz", 0);
+    matrixOptions_.disable_busy_waiting = matrixOptions_.limit_refresh_rate_hz > 0;
     pixelMapperConfig_ = config_.getString("matrix_options.pixel_mapper_config", "");
     matrixOptions_.pixel_mapper_config = pixelMapperConfig_.c_str();
     matrixOptions_.disable_hardware_pulsing = true;
@@ -177,6 +194,10 @@ bool MatrixDisplay::start()
         running_.store(true, std::memory_order_release);
         return true;
     }
+
+    // Force the first tick after (re)start to draw, even within the same minute.
+    lastRenderedMinute_ = -1;
+    lastRenderedName_.clear();
 
     running_.store(true, std::memory_order_release);
     executor_.start(std::chrono::milliseconds(intervalMs_), [this]() { render(); });
